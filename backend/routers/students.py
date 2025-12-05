@@ -3,8 +3,9 @@ from sqlalchemy.orm import Session
 from typing import List
 
 from .. import models, schemas
-from ..auth import AdminOnly, TeacherOnly, StudentOnly, get_current_user
+from ..auth import AdminOnly, TeacherOnly, get_current_user
 from ..database import get_db
+from ..services.analytics import calculate_percentage
 
 router = APIRouter(prefix="/students", tags=["Students"])
 
@@ -29,6 +30,36 @@ def get_student(student_id: int, db: Session = Depends(get_db), user=Depends(get
     if not student:
         raise HTTPException(status_code=404, detail="Student not found")
     return student
+
+
+@router.get("/{student_id}/profile", response_model=schemas.StudentProfileResponse)
+def get_student_profile(student_id: int, db: Session = Depends(get_db), user=Depends(get_current_user)):
+    student = db.query(models.Student).filter(models.Student.id == student_id).first()
+    if not student:
+        raise HTTPException(status_code=404, detail="Student not found")
+
+    marks = []
+    for mark in student.marks:
+        percentage = calculate_percentage(mark.marks_obtained, mark.assessment.maximum_marks)
+        marks.append(
+            {
+                "assessment": mark.assessment.name,
+                "subject": mark.assessment.subject.name if mark.assessment.subject else "",
+                "term": mark.assessment.term,
+                "maximum": mark.assessment.maximum_marks,
+                "score": mark.marks_obtained,
+                "percentage": percentage,
+            }
+        )
+
+    return {
+        "id": student.id,
+        "name": student.name,
+        "roll_number": student.roll_number,
+        "class_id": student.class_id,
+        "class_name": student.class_obj.name if student.class_obj else None,
+        "marks": marks,
+    }
 
 
 @router.put("/{student_id}", response_model=schemas.StudentOut, dependencies=[Depends(TeacherOnly)])

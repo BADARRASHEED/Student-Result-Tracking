@@ -160,3 +160,31 @@ class TopStudent(BaseModel):
 class ClassOverviewResponse(BaseModel):
     overview: ClassOverview
     top_students: List[TopStudent]
+
+
+class DashboardSummary(BaseModel):
+    total_students: int
+    total_classes: int
+    total_subjects: int
+    total_assessments: int
+    average_score: float
+    pass_rate: float
+    recent_assessments: List[str]
+
+
+class StudentMarkDetail(BaseModel):
+    assessment: str
+    subject: str
+    term: str
+    maximum: float
+    score: float
+    percentage: float
+
+
+class StudentProfileResponse(BaseModel):
+    id: int
+    name: str
+    roll_number: str
+    class_id: int
+    class_name: Optional[str] = None
+    marks: List[StudentMarkDetail]

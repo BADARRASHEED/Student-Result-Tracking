@@ -12,7 +12,7 @@ if __package__ in (None, ""):
     __package__ = "backend"
 
 from .database import Base, engine
-from .seed import ensure_seed_data
+from .seed_data import ensure_seed_data
 from .routers import auth, students, classes, subjects, assessments, marks, analytics, reports
 
 Base.metadata.create_all(bind=engine)
