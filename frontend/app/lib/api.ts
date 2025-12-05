@@ -52,11 +52,10 @@ export async function apiFetch(path: string, options: RequestInit = {}) {
   const requestOptions = { ...options, headers };
   const urls: string[] = [`${API_BASE}${path}`];
 
-  // If the primary base URL is unreachable (e.g., due to mixed content),
-  // retry using the current origin as a fallback to improve resiliency.
-  if (typeof window !== "undefined") {
-    const sameOrigin = `${window.location.origin}${path}`;
-    if (!urls.includes(sameOrigin)) urls.push(sameOrigin);
+  // If the primary base URL is unreachable (e.g., due to mixed content or a
+  // sleeping local server), retry the hosted fallback API before failing.
+  if (!urls.some((url) => url.startsWith(REMOTE_FALLBACK_BASE))) {
+    urls.push(`${REMOTE_FALLBACK_BASE}${path}`);
   }
 
   let lastError: unknown = null;
