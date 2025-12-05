@@ -5,14 +5,26 @@ export const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:80
 async function performRequest(url: string, options: RequestInit) {
   const res = await fetch(url, options);
   if (!res.ok) {
-    let message = "Request failed";
-    const responseText = await res.text();
-    try {
-      const payload = JSON.parse(responseText || "{}");
-      message = payload?.detail || payload?.message || JSON.stringify(payload);
-    } catch {
-      if (responseText) message = responseText;
+    let message = `Request failed (status ${res.status})`;
+    const contentType = res.headers.get("content-type") || "";
+
+    // Prefer structured messages from JSON responses when available.
+    if (contentType.includes("application/json")) {
+      try {
+        const payload = await res.json();
+        message = payload?.detail || payload?.message || JSON.stringify(payload);
+      } catch {
+        // If JSON parsing fails, fall back to the default message.
+      }
+    } else {
+      // Avoid dumping full HTML documents into the UI; keep the message concise.
+      const responseText = await res.text();
+      const safeText = responseText.replace(/<[^>]*>/g, "").trim();
+      if (safeText) {
+        message = safeText.slice(0, 300);
+      }
     }
+
     const error = new Error(message);
     (error as any).status = res.status;
     throw error;
