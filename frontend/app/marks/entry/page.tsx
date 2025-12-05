@@ -11,37 +11,42 @@ export default function MarksEntry() {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState({ students: true, assessments: true });
 
+  const loadData = async () => {
+    setLoading({ students: true, assessments: true });
+    setMessage("");
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    if (!token) {
+      setMessage("Please sign in as the admin to load students and assessments.");
+      setLoading({ students: false, assessments: false });
+      return;
+    }
+
+    try {
+      const [studentsResponse, assessmentsResponse] = await Promise.all([
+        apiFetch("/students/"),
+        apiFetch("/assessments/"),
+      ]);
+      setStudents(studentsResponse);
+      setAssessments(assessmentsResponse);
+      if (studentsResponse.length > 0) setSelectedStudent(String(studentsResponse[0].id));
+      if (assessmentsResponse.length > 0) setSelectedAssessment(String(assessmentsResponse[0].id));
+      if (assessmentsResponse.length === 0) {
+        setMessage("No assessments available. Run the seed script to generate demo data.");
+      } else {
+        setMessage("Data synced. Ready to save marks.");
+      }
+    } catch (err: any) {
+      setStudents([]);
+      setAssessments([]);
+      const detail = err?.message || "Failed to load marks entry data.";
+      setMessage(`Failed to load data: ${detail}`);
+    } finally {
+      setLoading({ students: false, assessments: false });
+    }
+  };
+
   useEffect(() => {
-    const load = async () => {
-      const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
-      if (!token) {
-        setMessage("Please sign in as the admin to load students and assessments.");
-        setLoading({ students: false, assessments: false });
-        return;
-      }
-      try {
-        const [studentsResponse, assessmentsResponse] = await Promise.all([
-          apiFetch("/students/"),
-          apiFetch("/assessments/"),
-        ]);
-        setStudents(studentsResponse);
-        setAssessments(assessmentsResponse);
-        if (studentsResponse.length > 0) setSelectedStudent(String(studentsResponse[0].id));
-        if (assessmentsResponse.length > 0) setSelectedAssessment(String(assessmentsResponse[0].id));
-        if (assessmentsResponse.length === 0) {
-          setMessage("No assessments available. Run the seed script to generate demo data.");
-        } else {
-          setMessage("Data synced. Ready to save marks.");
-        }
-      } catch (err: any) {
-        setStudents([]);
-        setAssessments([]);
-        setMessage(err.message || "Failed to load marks entry data.");
-      } finally {
-        setLoading({ students: false, assessments: false });
-      }
-    };
-    load();
+    loadData();
   }, []);
 
   const submit = async (e: React.FormEvent) => {
@@ -148,7 +153,7 @@ export default function MarksEntry() {
           </div>
 
           <div className="form-actions simple-actions">
-            <button className="button secondary" type="button" onClick={() => window.location.reload()}>
+            <button className="button secondary" type="button" onClick={loadData} disabled={loading.students || loading.assessments}>
               Reload data
             </button>
             <button className="button" type="submit" disabled={!selectedStudent || !selectedAssessment || marks === ""}>
