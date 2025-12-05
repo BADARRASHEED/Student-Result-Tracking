@@ -26,7 +26,7 @@ export default function Dashboard() {
       <div className="hero">
         <p className="tag">Dashboard</p>
         <h1 className="hero-title">Welcome back, {role || "Guest"}</h1>
-        <p className="hero-subtitle">A clear, bright workspace for managing student progress and assessments.</p>
+        <p className="hero-subtitle">Curated cards, glassy surfaces, and refreshed spacing keep your focus on progress.</p>
       </div>
 
       {error && <p style={{ color: "#f87171" }}>{error}</p>}

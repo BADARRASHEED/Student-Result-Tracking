@@ -22,16 +22,20 @@ export default function NavBar() {
   return (
     <header className="topbar">
       <div className="brand">
-        <span className="brand-title">Student Result Tracking &amp; Performance Analytics</span>
-        <span className="brand-subtitle">Organize assessments, student profiles, and insights in one place</span>
+        <span className="brand-title">Result Tracking Workspace</span>
+        <span className="brand-subtitle">Streamlined dashboards, students, marks, and analytics in one flow</span>
       </div>
       <div className="user-chip">
         <div>
           <div style={{ fontWeight: 600 }}>{name || "Guest"}</div>
           <div className="pill">{role || "No role"}</div>
         </div>
-        <Link href="/dashboard" className="button inline secondary">Dashboard</Link>
-        <button className="button inline" onClick={logout}>Logout</button>
+        <Link href="/dashboard" className="button inline secondary">
+          Dashboard
+        </Link>
+        <button className="button inline" onClick={logout}>
+          Logout
+        </button>
       </div>
     </header>
   );

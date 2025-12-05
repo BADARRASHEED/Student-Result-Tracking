@@ -14,7 +14,7 @@ export default function SideNav() {
 
   return (
     <aside className="sidebar">
-      <h4>Navigate</h4>
+      <h4>Quick navigate</h4>
       <div className="nav-links">
         {links.map((link) => (
           <Link

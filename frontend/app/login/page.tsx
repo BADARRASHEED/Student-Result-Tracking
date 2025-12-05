@@ -4,8 +4,8 @@ import { useRouter } from "next/navigation";
 import { API_BASE, saveAuth } from "../lib/api";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("sajana.admin@example.com");
-  const [password, setPassword] = useState("Admin@123");
+  const [email, setEmail] = useState("admin@gami.com");
+  const [password, setPassword] = useState("admin123");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
@@ -40,76 +40,105 @@ export default function LoginPage() {
   return (
     <div className="auth-shell">
       <div className="auth-card">
-        <div className="auth-header">
-          <div className="eyebrow">Admin Console</div>
-          <h1>Student Results Command Center</h1>
-          <p className="muted">
-            Sign in to keep marks, assessments, and cohorts aligned—without hunting for the right screen.
-          </p>
+        <div className="auth-panel">
+          <div className="eyebrow">Student Result Platform</div>
+          <div className="auth-header">
+            <h1>Secure entry for administrators</h1>
+            <p className="muted">
+              Sign in to orchestrate classes, students, and assessments with a streamlined workspace built for clarity.
+            </p>
+          </div>
+
+          <form className="auth-form" onSubmit={handleSubmit}>
+            <div className="input-row">
+              <label className="label" htmlFor="email">
+                Work Email
+              </label>
+              <input
+                id="email"
+                className="input"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@school.edu"
+                autoComplete="username"
+                required
+              />
+            </div>
+
+            <div className="input-row">
+              <label className="label" htmlFor="password">
+                Password
+              </label>
+              <input
+                id="password"
+                className="input"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Secure password"
+                autoComplete="current-password"
+                required
+              />
+            </div>
+
+            {error && (
+              <div className="alert" role="status" aria-live="polite">
+                {error}
+              </div>
+            )}
+
+            <button className="button full" type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Signing in..." : "Access Console"}
+            </button>
+          </form>
+
+          <div className="auth-footer" style={{ borderTop: "none", paddingTop: 0 }}>
+            <div>
+              <p className="muted">After signing in you can jump straight to dashboards or update marks.</p>
+              <div className="list-inline">
+                <span className="pill">Fast navigation</span>
+                <span className="pill">Modern layout</span>
+                <span className="pill">Clear typography</span>
+              </div>
+            </div>
+            <div className="auth-hint">
+              <div className="pill">Optimized for admin focus</div>
+              <span className="muted">Minimal clutter, maximum visibility.</span>
+            </div>
+          </div>
         </div>
 
-        <form className="auth-form" onSubmit={handleSubmit}>
-          <div className="input-row">
-            <label className="label" htmlFor="email">
-              Work Email
-            </label>
-            <input
-              id="email"
-              className="input"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@school.edu"
-              autoComplete="username"
-              required
-            />
-          </div>
-
-          <div className="input-row">
-            <label className="label" htmlFor="password">
-              Password
-            </label>
-            <input
-              id="password"
-              className="input"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Secure password"
-              autoComplete="current-password"
-              required
-            />
-          </div>
-
-          {error && (
-            <div className="alert" role="status" aria-live="polite">
-              {error}
+        <div className="auth-aside">
+          <div className="stat-board">
+            <div className="stat-chip">
+              <span className="stat-label">Students ready</span>
+              <span className="stat-value">15 tracked profiles</span>
             </div>
-          )}
-
-          <button className="button full" type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Signing in..." : "Sign In"}
-          </button>
-        </form>
-
-        <div className="auth-footer">
-          <div>
-            <p className="muted">Use the seeded admin account to access the dashboard.</p>
-            <div className="cred-grid">
-              <div className="cred-chip">
-                <span className="cred-label">Email</span>
-                <span className="cred-value">sajana.admin@example.com</span>
-              </div>
-              <div className="cred-chip">
-                <span className="cred-label">Password</span>
-                <span className="cred-value">Admin@123</span>
-              </div>
+            <div className="stat-chip">
+              <span className="stat-label">Assessment health</span>
+              <span className="stat-value">Pass rates in real time</span>
+            </div>
+            <div className="stat-chip">
+              <span className="stat-label">Navigation</span>
+              <span className="stat-value">Dashboards &amp; analytics one click away</span>
             </div>
           </div>
-          <div className="auth-hint">
-            <div className="pill">Fewer distractions</div>
-            <span className="muted">Only the essentials appear after login.</span>
-          </div>
+
+          <ul className="feature-list">
+            <li>
+              <span className="feature-dot" />
+              <span>Balanced dark theme for long review sessions.</span>
+            </li>
+            <li>
+              <span className="feature-dot" />
+              <span>Student cards and analytics refreshed with glassmorphism.</span>
+            </li>
+            <li>
+              <span className="feature-dot" />
+              <span>Consistent spacing, rounded corners, and legible labels.</span>
+            </li>
+          </ul>
         </div>
       </div>
     </div>
