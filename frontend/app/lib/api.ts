@@ -1,6 +1,15 @@
 "use client";
 
-export const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:8000";
+const LOCAL_FALLBACK_BASE = "http://localhost:8000";
+const REMOTE_FALLBACK_BASE = "https://student-result-tracking-backend.onrender.com";
+
+export const API_BASE =
+  process.env.NEXT_PUBLIC_API_BASE ||
+  (typeof window !== "undefined"
+    ? ["localhost", "127.0.0.1", "::1"].includes(window.location.hostname)
+      ? LOCAL_FALLBACK_BASE
+      : REMOTE_FALLBACK_BASE
+    : LOCAL_FALLBACK_BASE);
 
 async function performRequest(url: string, options: RequestInit) {
   const res = await fetch(url, options);
