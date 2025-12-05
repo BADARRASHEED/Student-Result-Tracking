@@ -26,7 +26,7 @@ export default function Dashboard() {
       <div className="hero">
         <p className="tag">Dashboard</p>
         <h1 className="hero-title">Welcome back, {role || "Guest"}</h1>
-        <p className="hero-subtitle">Sajana – Student Result Tracking &amp; Performance Analytics System</p>
+        <p className="hero-subtitle">A clear, bright workspace for managing student progress and assessments.</p>
       </div>
 
       {error && <p style={{ color: "#f87171" }}>{error}</p>}
@@ -56,8 +56,8 @@ export default function Dashboard() {
             <span className="pill">{summary?.total_assessments ?? 0} assessments</span>
           </div>
           <p>
-            Sajana Analytics curates three demo classes filled with rich marks data to make dashboards and charts instantly
-            meaningful. Use the quick links to jump into day-to-day actions.
+            Three demo classes are prefilled with meaningful marks so charts and summaries stay informative from the first
+            login. Use the quick links to jump into your everyday actions.
           </p>
           <div className="list-inline">
             <Link className="button inline" href="/marks/entry">Enter Marks</Link>
@@ -73,7 +73,7 @@ export default function Dashboard() {
               <li key={a} className="pill">{a}</li>
             ))}
           </ul>
-          <p className="footer-note">Designed and Developed by Sajana</p>
+          <p className="footer-note">Stay on top of the latest evaluations with a quick glance.</p>
         </div>
       </div>
     </div>

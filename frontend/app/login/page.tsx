@@ -4,8 +4,8 @@ import { useRouter } from "next/navigation";
 import { API_BASE, saveAuth } from "../lib/api";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("sajana.admin@example.com");
-  const [password, setPassword] = useState("Admin@123");
+  const [email, setEmail] = useState("sanjana@gmail.com");
+  const [password, setPassword] = useState("sanjana123");
   const [error, setError] = useState("");
   const router = useRouter();
 
@@ -34,9 +34,9 @@ export default function LoginPage() {
     <div style={{ display: "grid", placeItems: "center", minHeight: "100vh" }}>
       <div className="card" style={{ maxWidth: 540, width: "100%" }}>
         <div className="hero" style={{ textAlign: "center" }}>
-          <p className="tag">Sajana Analytics</p>
-          <h1 className="hero-title">Sajana – Student Result Tracking &amp; Performance Analytics System</h1>
-          <p className="hero-subtitle">Designed and Developed by Sajana</p>
+          <p className="tag">Admin Access</p>
+          <h1 className="hero-title">Student Result Tracking &amp; Performance Analytics</h1>
+          <p className="hero-subtitle">Bright, streamlined controls for marks entry, student records, and insights.</p>
         </div>
         <form onSubmit={handleSubmit}>
           <label className="label">Email</label>
@@ -49,8 +49,7 @@ export default function LoginPage() {
           </button>
         </form>
         <p className="footer-note">
-          Demo accounts: Admin - sajana.admin@example.com / Admin@123 · Teacher - emma.teacher@example.com / Password@123 ·
-          Student - amelia.student@example.com / Password@123
+          Admin login: sanjana@gmail.com / sanjana123. Use this account to manage the full dashboard experience.
         </p>
       </div>
     </div>
