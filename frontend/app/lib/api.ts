@@ -6,12 +6,12 @@ async function performRequest(url: string, options: RequestInit) {
   const res = await fetch(url, options);
   if (!res.ok) {
     let message = "Request failed";
+    const responseText = await res.text();
     try {
-      const payload = await res.json();
+      const payload = JSON.parse(responseText || "{}");
       message = payload?.detail || payload?.message || JSON.stringify(payload);
     } catch {
-      const text = await res.text();
-      if (text) message = text;
+      if (responseText) message = responseText;
     }
     const error = new Error(message);
     (error as any).status = res.status;
