@@ -43,7 +43,7 @@ body {
   border: 1px solid rgba(226, 232, 240, 0.9);
   box-shadow: 0 24px 60px rgba(37, 99, 235, 0.12);
   border-radius: 18px;
-  padding: 1.5rem;
+  padding: 2rem;
   backdrop-filter: blur(6px);
 }
 
@@ -61,6 +61,7 @@ body {
 
 .muted {
   color: var(--muted);
+  font-size: 0.95rem;
 }
 
 .eyebrow {
@@ -77,7 +78,15 @@ body {
 }
 
 .auth-form {
-  margin-top: 0.5rem;
+  margin-top: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.input-row {
+  display: flex;
+  flex-direction: column;
 }
 
 .alert {
@@ -104,6 +113,10 @@ body {
   margin-top: 1.5rem;
   padding-top: 1rem;
   border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
 .cred-grid {
@@ -132,6 +145,14 @@ body {
 .cred-value {
   font-weight: 700;
   color: var(--text);
+}
+
+.auth-hint {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.35rem;
+  text-align: right;
 }
 
 a {
@@ -222,6 +243,12 @@ a {
   color: var(--primary-accent);
 }
 
+.page-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.25rem;
+}
+
 .page-content {
   padding: 1.75rem 2rem;
 }
@@ -257,6 +284,21 @@ a {
 
 .grid-2 {
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+}
+
+.insight-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.insight-card {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1rem;
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.04), #ffffff);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
 }
 
 .button {
@@ -383,6 +425,44 @@ a {
   font-weight: 600;
 }
 
+.form-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.helper-card {
+  position: sticky;
+  top: 96px;
+  align-self: flex-start;
+  background: linear-gradient(180deg, rgba(37, 99, 235, 0.08), #ffffff);
+}
+
+.helper-list {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.pill-strong {
+  background: rgba(37, 99, 235, 0.12);
+  color: var(--primary-accent);
+  border-color: rgba(37, 99, 235, 0.4);
+}
+
 .list-inline {
   display: flex;
   flex-wrap: wrap;
@@ -419,5 +499,13 @@ a {
 
   .nav-link {
     display: inline-flex;
+  }
+
+  .page-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-card {
+    padding: 1.5rem;
   }
 }

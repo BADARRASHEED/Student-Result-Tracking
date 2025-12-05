@@ -44,38 +44,42 @@ export default function LoginPage() {
           <div className="eyebrow">Admin Console</div>
           <h1>Student Results Command Center</h1>
           <p className="muted">
-            Secure access to update marks, manage cohorts, and review performance trends without distractions.
+            Sign in to keep marks, assessments, and cohorts aligned—without hunting for the right screen.
           </p>
         </div>
 
         <form className="auth-form" onSubmit={handleSubmit}>
-          <label className="label" htmlFor="email">
-            Work Email
-          </label>
-          <input
-            id="email"
-            className="input"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@school.edu"
-            autoComplete="username"
-            required
-          />
+          <div className="input-row">
+            <label className="label" htmlFor="email">
+              Work Email
+            </label>
+            <input
+              id="email"
+              className="input"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@school.edu"
+              autoComplete="username"
+              required
+            />
+          </div>
 
-          <label className="label" htmlFor="password">
-            Password
-          </label>
-          <input
-            id="password"
-            className="input"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Secure password"
-            autoComplete="current-password"
-            required
-          />
+          <div className="input-row">
+            <label className="label" htmlFor="password">
+              Password
+            </label>
+            <input
+              id="password"
+              className="input"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Secure password"
+              autoComplete="current-password"
+              required
+            />
+          </div>
 
           {error && (
             <div className="alert" role="status" aria-live="polite">
@@ -101,6 +105,10 @@ export default function LoginPage() {
                 <span className="cred-value">Admin@123</span>
               </div>
             </div>
+          </div>
+          <div className="auth-hint">
+            <div className="pill">Fewer distractions</div>
+            <span className="muted">Only the essentials appear after login.</span>
           </div>
         </div>
       </div>
