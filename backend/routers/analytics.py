@@ -27,3 +27,13 @@ def class_overview(class_id: int, db: Session = Depends(get_db)):
     if not result:
         raise HTTPException(status_code=404, detail="Class not found")
     return result
+
+
+@router.get("/class/{class_id}/grades")
+def class_grades(class_id: int, db: Session = Depends(get_db)):
+    return analytics_service.class_grade_distribution(db, class_id)
+
+
+@router.get("/dashboard-summary", response_model=schemas.DashboardSummary)
+def dashboard_summary(db: Session = Depends(get_db)):
+    return analytics_service.dashboard_summary(db)

@@ -76,3 +76,52 @@ def class_overview(db: Session, class_id: int):
         },
         "top_students": top_students_sorted,
     }
+
+
+def class_grade_distribution(db: Session, class_id: int):
+    students = db.query(models.Student).filter(models.Student.class_id == class_id).all()
+    distribution = {"A": 0, "B": 0, "C": 0, "D": 0, "E": 0}
+    for student in students:
+        percentages = [
+            calculate_percentage(mark.marks_obtained, mark.assessment.maximum_marks) for mark in student.marks
+        ]
+        if not percentages:
+            continue
+        grade = grade_from_percentage(round(sum(percentages) / len(percentages), 2))
+        distribution[grade] = distribution.get(grade, 0) + 1
+
+    total = sum(distribution.values()) or 1
+    return [
+        {"grade": grade, "count": count, "percentage": round(count / total * 100, 2)}
+        for grade, count in distribution.items()
+    ]
+
+
+def dashboard_summary(db: Session):
+    total_students = db.query(models.Student).count()
+    total_classes = db.query(models.Class).count()
+    total_subjects = db.query(models.Subject).count()
+    total_assessments = db.query(models.Assessment).count()
+
+    marks = db.query(models.Mark).all()
+    percentages = [calculate_percentage(mark.marks_obtained, mark.assessment.maximum_marks) for mark in marks]
+    average_score = round(sum(percentages) / len(percentages), 2) if percentages else 0.0
+    pass_rate = round(len([p for p in percentages if p >= 40]) / len(percentages) * 100, 2) if percentages else 0.0
+
+    recent_assessments = (
+        db.query(models.Assessment)
+        .order_by(models.Assessment.date.desc())
+        .limit(5)
+        .with_entities(models.Assessment.name)
+        .all()
+    )
+
+    return {
+        "total_students": total_students,
+        "total_classes": total_classes,
+        "total_subjects": total_subjects,
+        "total_assessments": total_assessments,
+        "average_score": average_score,
+        "pass_rate": pass_rate,
+        "recent_assessments": [r[0] for r in recent_assessments],
+    }

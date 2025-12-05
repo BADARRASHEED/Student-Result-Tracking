@@ -20,17 +20,19 @@ export default function NavBar() {
   };
 
   return (
-    <nav>
-      <div>
-        <Link href="/dashboard">Home</Link>
-        <Link href="/students">Students</Link>
-        <Link href="/marks/entry">Marks</Link>
-        <Link href="/analytics">Analytics</Link>
+    <header className="topbar">
+      <div className="brand">
+        <span className="brand-title">Sajana – Student Result Tracking &amp; Performance Analytics System</span>
+        <span className="brand-subtitle">Sajana Analytics · Designed and Developed by Sajana</span>
       </div>
-      <div>
-        {role && <span style={{ marginRight: "1rem" }}>{name} ({role})</span>}
-        <button className="button" onClick={logout}>Logout</button>
+      <div className="user-chip">
+        <div>
+          <div style={{ fontWeight: 600 }}>{name || "Guest"}</div>
+          <div className="pill">{role || "No role"}</div>
+        </div>
+        <Link href="/dashboard" className="button inline secondary">Dashboard</Link>
+        <button className="button inline" onClick={logout}>Logout</button>
       </div>
-    </nav>
+    </header>
   );
 }

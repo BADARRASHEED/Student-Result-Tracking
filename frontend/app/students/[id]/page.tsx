@@ -19,7 +19,7 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, T
 export default function StudentDetail() {
   const params = useParams();
   const id = params?.id as string;
-  const [student, setStudent] = useState<any>(null);
+  const [profile, setProfile] = useState<any>(null);
   const [trend, setTrend] = useState<any>(null);
   const [error, setError] = useState("");
 
@@ -27,9 +27,11 @@ export default function StudentDetail() {
     if (!id) return;
     const load = async () => {
       try {
-        const s = await apiFetch(`/students/${id}`);
-        setStudent(s);
-        const t = await apiFetch(`/analytics/student/${id}/trend`);
+        const [p, t] = await Promise.all([
+          apiFetch(`/students/${id}/profile`),
+          apiFetch(`/analytics/student/${id}/trend`),
+        ]);
+        setProfile(p);
         setTrend(t);
       } catch (err: any) {
         setError(err.message);
@@ -44,31 +46,74 @@ export default function StudentDetail() {
 
   return (
     <div>
-      <h1>Student Detail</h1>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      {student && (
-        <div className="card">
-          <h3>{student.name}</h3>
-          <p>Roll Number: {student.roll_number}</p>
-          <p>Class: {student.class_id}</p>
-          <button className="button" onClick={downloadReport}>Download Report (Term 1)</button>
+      <div className="section-header">
+        <div className="hero">
+          <p className="tag">Student</p>
+          <h1 className="hero-title">{profile?.name || "Student Detail"}</h1>
+          <p className="hero-subtitle">Designed and Developed by Sajana</p>
+        </div>
+        <button className="button inline" onClick={downloadReport}>
+          Download Report Card
+        </button>
+      </div>
+      {error && <p style={{ color: "#f87171" }}>{error}</p>}
+
+      {profile && (
+        <div className="grid grid-2">
+          <div className="card">
+            <h3>Student Information</h3>
+            <p className="hero-subtitle">Roll Number: {profile.roll_number}</p>
+            <p className="hero-subtitle">Class: {profile.class_name}</p>
+            <p className="hero-subtitle">Email mapping: {profile.name.toLowerCase().split(" ").join(".")}@example.com</p>
+          </div>
+          {trend && (
+            <div className="card">
+              <h3>Performance Trend</h3>
+              <Line
+                data={{
+                  labels: trend.trend.map((p: any) => p.assessment),
+                  datasets: [
+                    {
+                      label: "Percentage",
+                      data: trend.trend.map((p: any) => p.percentage),
+                      borderColor: "#60a5fa",
+                      backgroundColor: "rgba(96, 165, 250, 0.2)",
+                    },
+                  ],
+                }}
+              />
+            </div>
+          )}
         </div>
       )}
-      {trend && (
+
+      {profile && (
         <div className="card">
-          <h3>Performance Trend</h3>
-          <Line
-            data={{
-              labels: trend.trend.map((p: any) => p.assessment),
-              datasets: [
-                {
-                  label: "Percentage",
-                  data: trend.trend.map((p: any) => p.percentage),
-                  borderColor: "#2563eb",
-                },
-              ],
-            }}
-          />
+          <h3>Assessments</h3>
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Assessment</th>
+                <th>Subject</th>
+                <th>Term</th>
+                <th>Score</th>
+                <th>%</th>
+              </tr>
+            </thead>
+            <tbody>
+              {profile.marks.map((m: any, idx: number) => (
+                <tr key={`${m.assessment}-${idx}`}>
+                  <td>{m.assessment}</td>
+                  <td>{m.subject}</td>
+                  <td>{m.term}</td>
+                  <td>
+                    {m.score}/{m.maximum}
+                  </td>
+                  <td>{m.percentage}%</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
     </div>

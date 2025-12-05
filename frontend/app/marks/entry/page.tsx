@@ -38,27 +38,37 @@ export default function MarksEntry() {
 
   return (
     <div>
-      <h1>Marks Entry</h1>
+      <div className="hero">
+        <p className="tag">Marks Entry</p>
+        <h1 className="hero-title">Capture assessment results quickly</h1>
+        <p className="hero-subtitle">Use the seeded classes, subjects, and assessments to demo the workflow.</p>
+      </div>
       <form onSubmit={submit} className="card">
-        <label>Student</label>
+        <label className="label">Student</label>
         <select className="input" value={selectedStudent} onChange={(e) => setSelectedStudent(e.target.value)} required>
           <option value="">Select student</option>
           {students.map((s) => (
-            <option key={s.id} value={s.id}>{s.name}</option>
+            <option key={s.id} value={s.id}>
+              {s.name}
+            </option>
           ))}
         </select>
-        <label>Assessment</label>
+        <label className="label">Assessment</label>
         <select className="input" value={selectedAssessment} onChange={(e) => setSelectedAssessment(e.target.value)} required>
           <option value="">Select assessment</option>
           {assessments.map((a) => (
-            <option key={a.id} value={a.id}>{a.name} - {a.term}</option>
+            <option key={a.id} value={a.id}>
+              {a.name} - {a.term}
+            </option>
           ))}
         </select>
-        <label>Marks Obtained</label>
+        <label className="label">Marks Obtained</label>
         <input className="input" type="number" value={marks} onChange={(e) => setMarks(Number(e.target.value))} required />
-        <button className="button" type="submit">Save</button>
+        <button className="button" type="submit">
+          Save
+        </button>
       </form>
-      {message && <p>{message}</p>}
+      {message && <p className="footer-note">{message}</p>}
     </div>
   );
 }

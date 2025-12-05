@@ -4,8 +4,8 @@ import { useRouter } from "next/navigation";
 import { API_BASE, saveAuth } from "../lib/api";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("admin@example.com");
-  const [password, setPassword] = useState("admin123");
+  const [email, setEmail] = useState("sajana.admin@example.com");
+  const [password, setPassword] = useState("Admin@123");
   const [error, setError] = useState("");
   const router = useRouter();
 
@@ -31,17 +31,28 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="container" style={{ maxWidth: 480 }}>
-      <h1>Login</h1>
-      <form onSubmit={handleSubmit} className="card">
-        <label>Email</label>
-        <input className="input" value={email} onChange={(e) => setEmail(e.target.value)} required />
-        <label>Password</label>
-        <input className="input" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-        {error && <p style={{ color: "red" }}>{error}</p>}
-        <button className="button" type="submit">Sign In</button>
-      </form>
-      <p>Use seeded accounts: admin@example.com / admin123 or teacher@example.com / teach123</p>
+    <div style={{ display: "grid", placeItems: "center", minHeight: "100vh" }}>
+      <div className="card" style={{ maxWidth: 540, width: "100%" }}>
+        <div className="hero" style={{ textAlign: "center" }}>
+          <p className="tag">Sajana Analytics</p>
+          <h1 className="hero-title">Sajana – Student Result Tracking &amp; Performance Analytics System</h1>
+          <p className="hero-subtitle">Designed and Developed by Sajana</p>
+        </div>
+        <form onSubmit={handleSubmit}>
+          <label className="label">Email</label>
+          <input className="input" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          <label className="label">Password</label>
+          <input className="input" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+          {error && <p style={{ color: "#f87171", marginTop: "-0.25rem" }}>{error}</p>}
+          <button className="button" type="submit" style={{ width: "100%", marginTop: "0.75rem" }}>
+            Sign In
+          </button>
+        </form>
+        <p className="footer-note">
+          Demo accounts: Admin - sajana.admin@example.com / Admin@123 · Teacher - emma.teacher@example.com / Password@123 ·
+          Student - amelia.student@example.com / Password@123
+        </p>
+      </div>
     </div>
   );
 }
