@@ -1,5 +1,6 @@
 """Seed script to populate rich demo data into SQLite."""
 from __future__ import annotations
+import os
 import pathlib
 import sys
 from datetime import date
@@ -15,6 +16,11 @@ from . import models
 from .auth import get_password_hash
 
 
+DEFAULT_ADMIN_EMAIL = os.getenv("DEFAULT_ADMIN_EMAIL", "admin@gmail.com")
+DEFAULT_ADMIN_PASSWORD = os.getenv("DEFAULT_ADMIN_PASSWORD", "admin123")
+DEFAULT_ADMIN_NAME = os.getenv("DEFAULT_ADMIN_NAME", "Admin User")
+
+
 # Ensure tables exist before attempting to seed
 Base.metadata.create_all(bind=engine)
 
@@ -23,6 +29,12 @@ def _create_users(db) -> Dict[str, models.User]:
     users: Dict[str, models.User] = {}
 
     admin_accounts = [
+        {
+            "name": DEFAULT_ADMIN_NAME,
+            "email": DEFAULT_ADMIN_EMAIL,
+            "password": DEFAULT_ADMIN_PASSWORD,
+            "role": "ADMIN",
+        },
         {"name": "Sajana", "email": "sajana.admin@example.com", "password": "Admin@123", "role": "ADMIN"},
         {
             "name": "Principal Admin",
@@ -73,6 +85,31 @@ def _create_users(db) -> Dict[str, models.User]:
 
     db.commit()
     return users
+
+
+def ensure_default_admin(db):
+    """Create or refresh the default admin account for quick logins."""
+    default_admin = db.query(models.User).filter(models.User.email == DEFAULT_ADMIN_EMAIL).first()
+    hashed_password = get_password_hash(DEFAULT_ADMIN_PASSWORD)
+
+    if default_admin:
+        default_admin.role = "ADMIN"
+        default_admin.name = default_admin.name or DEFAULT_ADMIN_NAME
+        default_admin.hashed_password = hashed_password
+        db.commit()
+        db.refresh(default_admin)
+        return default_admin
+
+    admin_user = models.User(
+        name=DEFAULT_ADMIN_NAME,
+        email=DEFAULT_ADMIN_EMAIL,
+        hashed_password=hashed_password,
+        role="ADMIN",
+    )
+    db.add(admin_user)
+    db.commit()
+    db.refresh(admin_user)
+    return admin_user
 
 
 def _create_classes(db, teachers: Dict[str, models.User]):
@@ -218,6 +255,7 @@ def seed(reset: bool = False):
     db = SessionLocal()
     try:
         if not reset and db.query(models.User).count() > 0:
+            ensure_default_admin(db)
             return
 
         # Clean existing rows when not doing a full drop to avoid duplicates
@@ -236,6 +274,7 @@ def seed(reset: bool = False):
         subjects = _create_subjects(db, classes)
         assessments = _create_assessments(db, subjects)
         _create_marks(db, students, assessments)
+        ensure_default_admin(db)
     finally:
         db.close()
 

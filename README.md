@@ -28,6 +28,9 @@ Modern, branded demo of a school results portal. The stack remains **FastAPI + S
    JWT_SECRET=devsecret
    ACCESS_TOKEN_EXPIRE_MINUTES=120
    CORS_ORIGINS=http://localhost:3000
+   DEFAULT_ADMIN_EMAIL=admin@gmail.com
+   DEFAULT_ADMIN_PASSWORD=admin123
+   DEFAULT_ADMIN_NAME="Admin User"
    ```
 3. Seed the database with demo data (creates/overwrites `school.db`):
    ```bash
@@ -56,6 +59,7 @@ Modern, branded demo of a school results portal. The stack remains **FastAPI + S
    The app runs on http://localhost:3000.
 
 ## Demo accounts (from seed data)
+- **Admin (default login)**: admin@gmail.com / admin123
 - **Admin**: sajana.admin@example.com / Admin@123
 - **Admin**: principal.admin@example.com / Admin@123
 - **Teachers**: emma.teacher@example.com, liam.teacher@example.com, ava.teacher@example.com, noah.teacher@example.com, sophia.teacher@example.com (all Password@123)
