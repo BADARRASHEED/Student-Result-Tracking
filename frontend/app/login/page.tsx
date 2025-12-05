@@ -4,8 +4,8 @@ import { useRouter } from "next/navigation";
 import { API_BASE, saveAuth } from "../lib/api";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("admin@gami.com");
-  const [password, setPassword] = useState("admin123");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
@@ -24,8 +24,15 @@ export default function LoginPage() {
         body,
       });
       if (!res.ok) {
-        const message = await res.text();
-        throw new Error(message || "Invalid credentials");
+        let message = "Invalid credentials";
+        try {
+          const payload = await res.json();
+          message = payload?.detail || payload?.message || message;
+        } catch (parseError) {
+          const fallback = await res.text();
+          message = fallback || message;
+        }
+        throw new Error(message);
       }
       const data = await res.json();
       saveAuth(data.access_token, data.role || "", data.name || "");
@@ -43,10 +50,8 @@ export default function LoginPage() {
         <div className="auth-panel">
           <div className="eyebrow">Student Result Platform</div>
           <div className="auth-header">
-            <h1>Secure entry for administrators</h1>
-            <p className="muted">
-              Sign in to orchestrate classes, students, and assessments with a streamlined workspace built for clarity.
-            </p>
+            <h1>Welcome back</h1>
+            <p className="muted">Sign in to continue to the admin console.</p>
           </div>
 
           <form className="auth-form" onSubmit={handleSubmit}>
@@ -76,7 +81,7 @@ export default function LoginPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Secure password"
+                placeholder="Your password"
                 autoComplete="current-password"
                 required
               />
@@ -89,56 +94,9 @@ export default function LoginPage() {
             )}
 
             <button className="button full" type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Signing in..." : "Access Console"}
+              {isSubmitting ? "Signing in..." : "Sign In"}
             </button>
           </form>
-
-          <div className="auth-footer" style={{ borderTop: "none", paddingTop: 0 }}>
-            <div>
-              <p className="muted">After signing in you can jump straight to dashboards or update marks.</p>
-              <div className="list-inline">
-                <span className="pill">Fast navigation</span>
-                <span className="pill">Modern layout</span>
-                <span className="pill">Clear typography</span>
-              </div>
-            </div>
-            <div className="auth-hint">
-              <div className="pill">Optimized for admin focus</div>
-              <span className="muted">Minimal clutter, maximum visibility.</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="auth-aside">
-          <div className="stat-board">
-            <div className="stat-chip">
-              <span className="stat-label">Students ready</span>
-              <span className="stat-value">15 tracked profiles</span>
-            </div>
-            <div className="stat-chip">
-              <span className="stat-label">Assessment health</span>
-              <span className="stat-value">Pass rates in real time</span>
-            </div>
-            <div className="stat-chip">
-              <span className="stat-label">Navigation</span>
-              <span className="stat-value">Dashboards &amp; analytics one click away</span>
-            </div>
-          </div>
-
-          <ul className="feature-list">
-            <li>
-              <span className="feature-dot" />
-              <span>Balanced dark theme for long review sessions.</span>
-            </li>
-            <li>
-              <span className="feature-dot" />
-              <span>Student cards and analytics refreshed with glassmorphism.</span>
-            </li>
-            <li>
-              <span className="feature-dot" />
-              <span>Consistent spacing, rounded corners, and legible labels.</span>
-            </li>
-          </ul>
         </div>
       </div>
     </div>
