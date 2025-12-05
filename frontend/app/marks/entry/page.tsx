@@ -1,72 +1,140 @@
 "use client";
-import { useEffect, useState } from "react";
-import { apiFetch } from "../../lib/api";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { apiFetch, clearAuth } from "../../lib/api";
+
+type Student = {
+  id: number;
+  name: string;
+  roll_number: string;
+  class_id?: number;
+};
+
+type Assessment = {
+  id: number;
+  name: string;
+  term: string;
+  maximum_marks: number;
+  subject?: {
+    name?: string;
+  } | null;
+};
+
+const DEFAULT_STATUS = "Ready";
 
 export default function MarksEntry() {
-  const [students, setStudents] = useState<any[]>([]);
-  const [assessments, setAssessments] = useState<any[]>([]);
+  const [students, setStudents] = useState<Student[]>([]);
+  const [assessments, setAssessments] = useState<Assessment[]>([]);
   const [selectedStudent, setSelectedStudent] = useState<string>("");
   const [selectedAssessment, setSelectedAssessment] = useState<string>("");
   const [marks, setMarks] = useState<string>("");
-  const [message, setMessage] = useState("");
-  const [loading, setLoading] = useState({ students: true, assessments: true });
+  const [status, setStatus] = useState(DEFAULT_STATUS);
+  const [loading, setLoading] = useState({ students: false, assessments: false });
+  const [isSaving, setIsSaving] = useState(false);
 
-  const loadData = async () => {
+  const resetSelections = useCallback((studentList: Student[], assessmentList: Assessment[]) => {
+    setSelectedStudent((prev) => {
+      if (prev && studentList.some((s) => String(s.id) === String(prev))) return prev;
+      return studentList.length > 0 ? String(studentList[0].id) : "";
+    });
+    setSelectedAssessment((prev) => {
+      if (prev && assessmentList.some((a) => String(a.id) === String(prev))) return prev;
+      return assessmentList.length > 0 ? String(assessmentList[0].id) : "";
+    });
+  }, []);
+
+  const loadData = useCallback(async () => {
     setLoading({ students: true, assessments: true });
-    setMessage("");
-    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
-    if (!token) {
-      setMessage("Please sign in as the admin to load students and assessments.");
-      setLoading({ students: false, assessments: false });
-      return;
-    }
-
+    setStatus("Syncing data...");
     try {
-      const [studentsResponse, assessmentsResponse] = await Promise.all([
+      const [studentData, assessmentData] = await Promise.all([
         apiFetch("/students/"),
         apiFetch("/assessments/"),
       ]);
-      setStudents(studentsResponse);
-      setAssessments(assessmentsResponse);
-      if (studentsResponse.length > 0) setSelectedStudent(String(studentsResponse[0].id));
-      if (assessmentsResponse.length > 0) setSelectedAssessment(String(assessmentsResponse[0].id));
-      if (assessmentsResponse.length === 0) {
-        setMessage("No assessments available. Run the seed script to generate demo data.");
+
+      setStudents(studentData);
+      setAssessments(assessmentData);
+      resetSelections(studentData, assessmentData);
+
+      if (!assessmentData.length) {
+        setStatus("No assessments available. Run the seed script to generate demo data.");
       } else {
-        setMessage("Data synced. Ready to save marks.");
+        setStatus("Data synced. Ready to save marks.");
       }
     } catch (err: any) {
+      const detail = err?.message || "Unable to load marks entry data.";
+      if (err?.status === 401) {
+        clearAuth();
+        setStatus("Session expired. Please sign in again.");
+      } else {
+        setStatus(`Failed to load data: ${detail}`);
+      }
       setStudents([]);
       setAssessments([]);
-      const detail = err?.message || "Failed to load marks entry data.";
-      setMessage(`Failed to load data: ${detail}`);
+      setSelectedStudent("");
+      setSelectedAssessment("");
     } finally {
       setLoading({ students: false, assessments: false });
     }
-  };
+  }, [resetSelections]);
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
 
-  const submit = async (e: React.FormEvent) => {
+  const selectedAssessmentRecord = useMemo(
+    () => assessments.find((a) => String(a.id) === selectedAssessment),
+    [assessments, selectedAssessment],
+  );
+
+  const selectedStudentName = useMemo(
+    () => students.find((s) => String(s.id) === selectedStudent)?.name,
+    [students, selectedStudent],
+  );
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setMessage("");
+    setStatus("Saving mark...");
+
+    const numericMarks = Number(marks);
+    if (Number.isNaN(numericMarks)) {
+      setStatus("Please enter a valid number for marks obtained.");
+      return;
+    }
+
+    if (selectedAssessmentRecord && numericMarks > selectedAssessmentRecord.maximum_marks) {
+      setStatus(`Marks cannot exceed ${selectedAssessmentRecord.maximum_marks}.`);
+      return;
+    }
+
+    setIsSaving(true);
     try {
       await apiFetch("/marks/", {
         method: "POST",
         body: JSON.stringify({
           student_id: Number(selectedStudent),
           assessment_id: Number(selectedAssessment),
-          marks_obtained: Number(marks),
+          marks_obtained: numericMarks,
         }),
       });
-      setMessage("Mark saved and synced.");
+      const subjectName = selectedAssessmentRecord?.subject?.name
+        ? `${selectedAssessmentRecord.subject.name} `
+        : "";
+      setStatus(`Mark saved for ${subjectName}${selectedAssessmentRecord?.name || "assessment"} (${selectedStudentName}).`);
       setMarks("");
     } catch (err: any) {
-      setMessage(err.message);
+      if (err?.status === 401) {
+        clearAuth();
+        setStatus("Session expired. Please sign in again.");
+      } else {
+        setStatus(err?.message || "Unable to save mark. Please try again.");
+      }
+    } finally {
+      setIsSaving(false);
     }
   };
+
+  const disableActions =
+    loading.students || loading.assessments || !selectedStudent || !selectedAssessment || isSaving;
 
   return (
     <div className="page-narrow">
@@ -79,8 +147,8 @@ export default function MarksEntry() {
           </div>
           <div className="status-box">
             <div className="label">Status</div>
-            <div className={`pill ${message ? "pill-strong" : ""}`} aria-live="polite">
-              {message || "Ready"}
+            <div className={`pill ${status !== DEFAULT_STATUS ? "pill-strong" : ""}`} aria-live="polite">
+              {status}
             </div>
           </div>
         </div>
@@ -96,7 +164,7 @@ export default function MarksEntry() {
           </div>
         </div>
 
-        <form onSubmit={submit} className="form-card">
+        <form onSubmit={handleSubmit} className="form-card">
           <div className="form-grid">
             <div className="input-row">
               <label className="label">Student</label>
@@ -153,11 +221,16 @@ export default function MarksEntry() {
           </div>
 
           <div className="form-actions simple-actions">
-            <button className="button secondary" type="button" onClick={loadData} disabled={loading.students || loading.assessments}>
+            <button
+              className="button secondary"
+              type="button"
+              onClick={loadData}
+              disabled={loading.students || loading.assessments}
+            >
               Reload data
             </button>
-            <button className="button" type="submit" disabled={!selectedStudent || !selectedAssessment || marks === ""}>
-              Save mark
+            <button className="button" type="submit" disabled={disableActions}>
+              {isSaving ? "Saving..." : "Save mark"}
             </button>
           </div>
         </form>
