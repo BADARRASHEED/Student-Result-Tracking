@@ -26,6 +26,114 @@ body {
   min-height: 100vh;
 }
 
+.auth-shell {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 2rem;
+  background: radial-gradient(circle at 10% 10%, rgba(37, 99, 235, 0.14), transparent 30%),
+    radial-gradient(circle at 90% 20%, rgba(14, 165, 233, 0.14), transparent 30%),
+    radial-gradient(circle at 50% 80%, rgba(99, 102, 241, 0.1), transparent 36%),
+    var(--bg);
+}
+
+.auth-card {
+  width: min(520px, 100%);
+  background: linear-gradient(180deg, #ffffff 0%, #f9fbff 100%);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  box-shadow: 0 24px 60px rgba(37, 99, 235, 0.12);
+  border-radius: 18px;
+  padding: 1.5rem;
+  backdrop-filter: blur(6px);
+}
+
+.auth-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.auth-header h1 {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.75rem;
+  background: rgba(37, 99, 235, 0.08);
+  color: var(--primary-accent);
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  border: 1px solid rgba(37, 99, 235, 0.18);
+  width: fit-content;
+}
+
+.auth-form {
+  margin-top: 0.5rem;
+}
+
+.alert {
+  margin: -0.35rem 0 0.85rem 0;
+  padding: 0.75rem 0.85rem;
+  border-radius: 12px;
+  background: rgba(239, 68, 68, 0.08);
+  color: #b91c1c;
+  border: 1px solid rgba(239, 68, 68, 0.18);
+  font-weight: 600;
+}
+
+.button.full {
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.auth-footer {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.cred-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.65rem;
+  margin-top: 0.6rem;
+}
+
+.cred-chip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: #ffffff;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.cred-label {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.cred-value {
+  font-weight: 700;
+  color: var(--text);
+}
+
 a {
   color: inherit;
   text-decoration: none;
