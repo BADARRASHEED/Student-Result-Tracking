@@ -1,0 +1,81 @@
+from io import BytesIO
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi.responses import StreamingResponse
+from sqlalchemy.orm import Session
+
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+
+from .. import models
+from ..database import get_db
+from ..services.analytics import calculate_percentage, grade_from_percentage
+
+router = APIRouter(prefix="/reports", tags=["Reports"])
+
+
+@router.get("/student/{student_id}")
+def student_report(student_id: int, term: str = "Term 1", db: Session = Depends(get_db)):
+    student = db.query(models.Student).filter(models.Student.id == student_id).first()
+    if not student:
+        raise HTTPException(status_code=404, detail="Student not found")
+
+    buffer = BytesIO()
+    p = canvas.Canvas(buffer, pagesize=letter)
+    width, height = letter
+
+    p.setFont("Helvetica-Bold", 16)
+    p.drawString(50, height - 50, "Demo School - Report Card")
+
+    p.setFont("Helvetica", 12)
+    p.drawString(50, height - 80, f"Student: {student.name}")
+    p.drawString(50, height - 100, f"Roll Number: {student.roll_number}")
+    p.drawString(50, height - 120, f"Class: {student.class_obj.name if student.class_obj else 'N/A'}")
+    p.drawString(50, height - 140, f"Term: {term}")
+
+    y = height - 180
+    p.setFont("Helvetica-Bold", 12)
+    p.drawString(50, y, "Assessment")
+    p.drawString(200, y, "Subject")
+    p.drawString(330, y, "Score")
+    p.drawString(400, y, "%")
+    p.drawString(450, y, "Grade")
+    y -= 20
+    total_pct = []
+    for mark in student.marks:
+        if mark.assessment.term != term:
+            continue
+        pct = calculate_percentage(mark.marks_obtained, mark.assessment.maximum_marks)
+        grade = grade_from_percentage(pct)
+        total_pct.append(pct)
+        p.setFont("Helvetica", 11)
+        p.drawString(50, y, mark.assessment.name)
+        p.drawString(200, y, mark.assessment.subject.name if mark.assessment.subject else "")
+        p.drawString(330, y, f"{mark.marks_obtained}/{mark.assessment.maximum_marks}")
+        p.drawString(400, y, f"{pct}%")
+        p.drawString(450, y, grade)
+        y -= 18
+        if y < 100:
+            p.showPage()
+            y = height - 50
+    overall = round(sum(total_pct) / len(total_pct), 2) if total_pct else 0
+    overall_grade = grade_from_percentage(overall)
+    p.setFont("Helvetica-Bold", 12)
+    p.drawString(50, y - 10, f"Overall Percentage: {overall}%")
+    p.drawString(300, y - 10, f"Overall Grade: {overall_grade}")
+
+    comment = "Needs Improvement"
+    if overall >= 85:
+        comment = "Excellent performance"
+    elif overall >= 70:
+        comment = "Good job"
+    elif overall >= 55:
+        comment = "Satisfactory"
+
+    p.drawString(50, y - 40, f"Comment: {comment}")
+
+    p.showPage()
+    p.save()
+
+    buffer.seek(0)
+    headers = {"Content-Disposition": f"attachment; filename=report_{student.roll_number}.pdf"}
+    return StreamingResponse(buffer, media_type="application/pdf", headers=headers)
