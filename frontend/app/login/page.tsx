@@ -4,8 +4,8 @@ import { useRouter } from "next/navigation";
 import { API_BASE, saveAuth } from "../lib/api";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("admin@gmail.com");
-  const [password, setPassword] = useState("admin123");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
@@ -48,21 +48,15 @@ export default function LoginPage() {
     <div className="auth-shell">
       <div className="auth-card">
         <div className="auth-panel">
-          <div className="eyebrow">Student Result Platform</div>
           <div className="auth-header">
-            <h1>Welcome back</h1>
-            <p className="muted">Admin-only access. Use the seeded admin credentials to continue.</p>
-          </div>
-
-          <div className="alert neutral" role="note">
-            <div className="label">Default admin login</div>
-            <div className="muted">admin@gmail.com / admin123</div>
+            <h1>Admin sign in</h1>
+            <p className="muted">Enter your credentials to continue.</p>
           </div>
 
           <form className="auth-form" onSubmit={handleSubmit}>
             <div className="input-row">
               <label className="label" htmlFor="email">
-                Work Email
+                Email
               </label>
               <input
                 id="email"

@@ -64,33 +64,34 @@ export default function MarksEntry() {
   };
 
   return (
-    <div className="page-grid">
-      <div>
-        <div className="hero">
-          <p className="tag">Marks Entry</p>
-          <h1 className="hero-title">Capture assessment results quickly</h1>
-          <p className="hero-subtitle">Use the seeded classes, subjects, and assessments to demo the workflow.</p>
-        </div>
-
-        <div className="insight-row">
-          <div className="insight-card">
-            <div className="label">Students loaded</div>
-            <div className="metric-value">{loading.students ? "..." : students.length || "0"}</div>
-            <p className="footer-note">Select a student to auto-attach roll details.</p>
+    <div className="page-narrow">
+      <div className="card simple-card">
+        <div className="section-header">
+          <div>
+            <p className="tag">Marks Entry</p>
+            <h1 className="compact-title">Update marks</h1>
+            <p className="muted">Load a student and assessment, enter marks, and save.</p>
           </div>
-          <div className="insight-card">
-            <div className="label">Assessments ready</div>
-            <div className="metric-value">{loading.assessments ? "..." : assessments.length || "0"}</div>
-            <p className="footer-note">Includes subject & term context in the dropdown.</p>
-          </div>
-          <div className="insight-card">
+          <div className="status-box">
             <div className="label">Status</div>
-            <div className={`pill ${message ? "pill-strong" : ""}`}>{message || "Waiting to save"}</div>
-            <p className="footer-note">Errors will show here instead of the bottom of the page.</p>
+            <div className={`pill ${message ? "pill-strong" : ""}`} aria-live="polite">
+              {message || "Ready"}
+            </div>
           </div>
         </div>
 
-        <form onSubmit={submit} className="card form-card">
+        <div className="quick-stats">
+          <div className="stat-chip">
+            <div className="stat-label">Students</div>
+            <div className="stat-value">{loading.students ? "Loading" : students.length || "0"}</div>
+          </div>
+          <div className="stat-chip">
+            <div className="stat-label">Assessments</div>
+            <div className="stat-value">{loading.assessments ? "Loading" : assessments.length || "0"}</div>
+          </div>
+        </div>
+
+        <form onSubmit={submit} className="form-card">
           <div className="form-grid">
             <div className="input-row">
               <label className="label">Student</label>
@@ -106,7 +107,7 @@ export default function MarksEntry() {
                 </option>
                 {students.map((s) => (
                   <option key={s.id} value={s.id}>
-                    {s.name} · Roll {s.roll_number}
+                    {s.name} (Roll {s.roll_number})
                   </option>
                 ))}
               </select>
@@ -126,7 +127,7 @@ export default function MarksEntry() {
                 </option>
                 {assessments.map((a) => (
                   <option key={a.id} value={a.id}>
-                    {a.name} · {a.term} · Max {a.maximum_marks}
+                    {a.name} - {a.term} (Max {a.maximum_marks})
                   </option>
                 ))}
               </select>
@@ -140,35 +141,22 @@ export default function MarksEntry() {
                 min={0}
                 value={marks}
                 onChange={(e) => setMarks(e.target.value)}
-                placeholder="e.g. 42"
+                placeholder="Enter marks"
                 required
               />
             </div>
           </div>
 
-          <div className="form-actions">
-            <div className="muted">Save once; the dashboard and analytics update instantly.</div>
-            <div className="action-buttons">
-              <button className="button secondary" type="button" onClick={() => window.location.reload()}>
-                Refresh lists
-              </button>
-              <button className="button" type="submit" disabled={!selectedStudent || !selectedAssessment || marks === ""}>
-                Save mark
-              </button>
-            </div>
+          <div className="form-actions simple-actions">
+            <button className="button secondary" type="button" onClick={() => window.location.reload()}>
+              Reload data
+            </button>
+            <button className="button" type="submit" disabled={!selectedStudent || !selectedAssessment || marks === ""}>
+              Save mark
+            </button>
           </div>
         </form>
       </div>
-
-      <aside className="card helper-card">
-        <h3>Tips for a smoother flow</h3>
-        <ul className="list-inline helper-list">
-          <li className="pill">Sign in with admin@gmail.com / admin123 only</li>
-          <li className="pill">Assessments include term + max score for clarity</li>
-          <li className="pill">Roll number shows alongside each student</li>
-        </ul>
-        <p className="footer-note">If an API call fails, check your login—this page now surfaces errors immediately.</p>
-      </aside>
     </div>
   );
 }
