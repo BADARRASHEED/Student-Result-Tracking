@@ -1,6 +1,15 @@
 import os
+import pathlib
+import sys
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
+# When executed directly (e.g., `uvicorn main:app --reload` from the backend folder),
+# `__package__` is empty and relative imports fail. Ensure the backend package can be
+# resolved before importing internal modules.
+if __package__ in (None, ""):
+    sys.path.append(str(pathlib.Path(__file__).resolve().parent.parent))
+    __package__ = "backend"
 
 from .database import Base, engine
 from .routers import auth, students, classes, subjects, assessments, marks, analytics, reports
