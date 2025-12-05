@@ -10,19 +10,18 @@ from .auth import get_password_hash
 Base.metadata.create_all(bind=engine)
 
 
-def seed():
-    db: Session = SessionLocal()
-    db.query(models.Mark).delete()
-    db.query(models.Assessment).delete()
-    db.query(models.Subject).delete()
-    db.query(models.Student).delete()
-    db.query(models.Class).delete()
-    db.query(models.User).delete()
-    db.commit()
+def _insert_demo_data(db: Session) -> None:
+    """Insert demo data into an empty database."""
 
-    admin = models.User(name="Admin User", email="admin@example.com", hashed_password=get_password_hash("admin123"), role="ADMIN")
-    teacher = models.User(name="Alice Teacher", email="teacher@example.com", hashed_password=get_password_hash("teach123"), role="TEACHER")
-    teacher2 = models.User(name="Bob Teacher", email="teacher2@example.com", hashed_password=get_password_hash("teach123"), role="TEACHER")
+    admin = models.User(
+        name="Admin User", email="admin@example.com", hashed_password=get_password_hash("admin123"), role="ADMIN"
+    )
+    teacher = models.User(
+        name="Alice Teacher", email="teacher@example.com", hashed_password=get_password_hash("teach123"), role="TEACHER"
+    )
+    teacher2 = models.User(
+        name="Bob Teacher", email="teacher2@example.com", hashed_password=get_password_hash("teach123"), role="TEACHER"
+    )
     db.add_all([admin, teacher, teacher2])
     db.commit()
 
@@ -48,10 +47,38 @@ def seed():
     db.commit()
 
     assessments = [
-        models.Assessment(name="Mid Term", type="Exam", maximum_marks=100, term="Term 1", subject_id=subjects[0].id, date=date(2024, 3, 1)),
-        models.Assessment(name="Project", type="Project", maximum_marks=50, term="Term 1", subject_id=subjects[1].id, date=date(2024, 3, 15)),
-        models.Assessment(name="Final Exam", type="Exam", maximum_marks=100, term="Term 2", subject_id=subjects[0].id, date=date(2024, 6, 20)),
-        models.Assessment(name="Mid Term", type="Exam", maximum_marks=100, term="Term 1", subject_id=subjects[2].id, date=date(2024, 3, 1)),
+        models.Assessment(
+            name="Mid Term",
+            type="Exam",
+            maximum_marks=100,
+            term="Term 1",
+            subject_id=subjects[0].id,
+            date=date(2024, 3, 1),
+        ),
+        models.Assessment(
+            name="Project",
+            type="Project",
+            maximum_marks=50,
+            term="Term 1",
+            subject_id=subjects[1].id,
+            date=date(2024, 3, 15),
+        ),
+        models.Assessment(
+            name="Final Exam",
+            type="Exam",
+            maximum_marks=100,
+            term="Term 2",
+            subject_id=subjects[0].id,
+            date=date(2024, 6, 20),
+        ),
+        models.Assessment(
+            name="Mid Term",
+            type="Exam",
+            maximum_marks=100,
+            term="Term 1",
+            subject_id=subjects[2].id,
+            date=date(2024, 3, 1),
+        ),
     ]
     db.add_all(assessments)
     db.commit()
@@ -66,8 +93,41 @@ def seed():
     ]
     db.add_all(marks)
     db.commit()
+
+
+def seed():
+    """Hard reset and reseed the database (used manually)."""
+
+    db: Session = SessionLocal()
+    db.query(models.Mark).delete()
+    db.query(models.Assessment).delete()
+    db.query(models.Subject).delete()
+    db.query(models.Student).delete()
+    db.query(models.Class).delete()
+    db.query(models.User).delete()
+    db.commit()
+
+    _insert_demo_data(db)
     db.close()
     print("Seed data inserted")
+
+
+def ensure_seed_data():
+    """Seed demo records if the database is empty.
+
+    This prevents login failures on a fresh deployment by guaranteeing that
+    default credentials are present without wiping existing data.
+    """
+
+    db: Session = SessionLocal()
+    try:
+        has_users = db.query(models.User).first()
+        if has_users:
+            return
+        _insert_demo_data(db)
+        print("Demo seed data ensured")
+    finally:
+        db.close()
 
 
 if __name__ == "__main__":
