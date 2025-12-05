@@ -27,8 +27,8 @@ export default function NavBar() {
       </div>
       <div className="user-chip">
         <div>
-          <div style={{ fontWeight: 600 }}>{name || "Guest"}</div>
-          <div className="pill">{role || "No role"}</div>
+          <div style={{ fontWeight: 600 }}>{name || "Admin Console"}</div>
+          <div className="pill">{role || "Admin only access"}</div>
         </div>
         <Link href="/dashboard" className="button inline secondary">
           Dashboard

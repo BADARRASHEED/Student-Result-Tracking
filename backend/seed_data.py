@@ -5,7 +5,7 @@ import pathlib
 import sys
 from datetime import date
 from random import Random
-from typing import Dict, List
+from typing import List
 
 if __package__ in (None, ""):
     sys.path.append(str(pathlib.Path(__file__).resolve().parent.parent))
@@ -25,66 +25,17 @@ DEFAULT_ADMIN_NAME = os.getenv("DEFAULT_ADMIN_NAME", "Admin User")
 Base.metadata.create_all(bind=engine)
 
 
-def _create_users(db) -> Dict[str, models.User]:
-    users: Dict[str, models.User] = {}
-
-    admin_accounts = [
-        {
-            "name": DEFAULT_ADMIN_NAME,
-            "email": DEFAULT_ADMIN_EMAIL,
-            "password": DEFAULT_ADMIN_PASSWORD,
-            "role": "ADMIN",
-        },
-        {"name": "Sajana", "email": "sajana.admin@example.com", "password": "Admin@123", "role": "ADMIN"},
-        {
-            "name": "Principal Admin",
-            "email": "principal.admin@example.com",
-            "password": "Admin@123",
-            "role": "ADMIN",
-        },
-    ]
-
-    teacher_accounts = [
-        {"name": "Emma Thompson", "email": "emma.teacher@example.com"},
-        {"name": "Liam Patel", "email": "liam.teacher@example.com"},
-        {"name": "Ava Rodriguez", "email": "ava.teacher@example.com"},
-        {"name": "Noah Williams", "email": "noah.teacher@example.com"},
-        {"name": "Sophia Chen", "email": "sophia.teacher@example.com"},
-    ]
-
-    student_accounts = [
-        {"name": "Amelia Green", "email": "amelia.student@example.com"},
-        {"name": "Benjamin Ross", "email": "benjamin.student@example.com"},
-        {"name": "Chloe Martin", "email": "chloe.student@example.com"},
-        {"name": "Daniel Carter", "email": "daniel.student@example.com"},
-        {"name": "Ella Johnson", "email": "ella.student@example.com"},
-        {"name": "Felix Grant", "email": "felix.student@example.com"},
-        {"name": "Grace Lee", "email": "grace.student@example.com"},
-        {"name": "Hannah Moore", "email": "hannah.student@example.com"},
-    ]
-
-    def add_user(record, role):
-        user = models.User(
-            name=record["name"],
-            email=record["email"],
-            hashed_password=get_password_hash(record.get("password", "Password@123")),
-            role=role,
-        )
-        db.add(user)
-        db.flush()
-        users[user.name] = user
-
-    for admin in admin_accounts:
-        add_user(admin, "ADMIN")
-
-    for teacher in teacher_accounts:
-        add_user(teacher, "TEACHER")
-
-    for student in student_accounts:
-        add_user(student, "STUDENT")
-
+def _create_users(db) -> models.User:
+    admin_user = models.User(
+        name=DEFAULT_ADMIN_NAME,
+        email=DEFAULT_ADMIN_EMAIL,
+        hashed_password=get_password_hash(DEFAULT_ADMIN_PASSWORD),
+        role="ADMIN",
+    )
+    db.add(admin_user)
     db.commit()
-    return users
+    db.refresh(admin_user)
+    return admin_user
 
 
 def ensure_default_admin(db):
@@ -112,15 +63,15 @@ def ensure_default_admin(db):
     return admin_user
 
 
-def _create_classes(db, teachers: Dict[str, models.User]):
+def _create_classes(db, admin_user: models.User):
     class_records = [
-        {"name": "Grade 8 - A", "teacher": teachers["Emma Thompson"]},
-        {"name": "Grade 9 - B", "teacher": teachers["Liam Patel"]},
-        {"name": "Grade 10 - A", "teacher": teachers["Ava Rodriguez"]},
+        {"name": "Grade 8 - A"},
+        {"name": "Grade 9 - B"},
+        {"name": "Grade 10 - A"},
     ]
     classes: List[models.Class] = []
     for record in class_records:
-        cls = models.Class(name=record["name"], teacher_id=record["teacher"].id)
+        cls = models.Class(name=record["name"], teacher_id=admin_user.id)
         db.add(cls)
         classes.append(cls)
     db.commit()
@@ -268,8 +219,8 @@ def seed(reset: bool = False):
             db.query(models.User).delete()
             db.commit()
 
-        users = _create_users(db)
-        classes = _create_classes(db, users)
+        admin_user = _create_users(db)
+        classes = _create_classes(db, admin_user)
         students = _create_students(db, classes)
         subjects = _create_subjects(db, classes)
         assessments = _create_assessments(db, subjects)

@@ -13,6 +13,12 @@ export default function MarksEntry() {
 
   useEffect(() => {
     const load = async () => {
+      const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+      if (!token) {
+        setMessage("Please sign in as the admin to load students and assessments.");
+        setLoading({ students: false, assessments: false });
+        return;
+      }
       try {
         const [studentsResponse, assessmentsResponse] = await Promise.all([
           apiFetch("/students/"),
@@ -22,8 +28,15 @@ export default function MarksEntry() {
         setAssessments(assessmentsResponse);
         if (studentsResponse.length > 0) setSelectedStudent(String(studentsResponse[0].id));
         if (assessmentsResponse.length > 0) setSelectedAssessment(String(assessmentsResponse[0].id));
+        if (assessmentsResponse.length === 0) {
+          setMessage("No assessments available. Run the seed script to generate demo data.");
+        } else {
+          setMessage("Data synced. Ready to save marks.");
+        }
       } catch (err: any) {
-        setMessage(err.message);
+        setStudents([]);
+        setAssessments([]);
+        setMessage(err.message || "Failed to load marks entry data.");
       } finally {
         setLoading({ students: false, assessments: false });
       }
@@ -150,7 +163,7 @@ export default function MarksEntry() {
       <aside className="card helper-card">
         <h3>Tips for a smoother flow</h3>
         <ul className="list-inline helper-list">
-          <li className="pill">Start with seeded email: sajana.admin@example.com</li>
+          <li className="pill">Sign in with admin@gmail.com / admin123 only</li>
           <li className="pill">Assessments include term + max score for clarity</li>
           <li className="pill">Roll number shows alongside each student</li>
         </ul>

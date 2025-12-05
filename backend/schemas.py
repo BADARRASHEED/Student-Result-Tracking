@@ -119,6 +119,8 @@ class MarkOut(MarkBase):
 class Token(BaseModel):
     access_token: str
     token_type: str = "bearer"
+    role: Optional[str] = None
+    name: Optional[str] = None
 
 
 class TokenData(BaseModel):

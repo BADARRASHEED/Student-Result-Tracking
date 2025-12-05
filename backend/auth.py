@@ -55,9 +55,9 @@ def get_current_user(db: Session = Depends(get_db), token: str = Depends(oauth2_
     return user
 
 
-def require_role(required_role: str):
+def require_role(*allowed_roles: str):
     def role_checker(user: models.User = Depends(get_current_user)):
-        if user.role != required_role:
+        if user.role not in allowed_roles:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Insufficient permissions")
         return user
 
@@ -65,5 +65,6 @@ def require_role(required_role: str):
 
 
 AdminOnly = require_role("ADMIN")
-TeacherOnly = require_role("TEACHER")
-StudentOnly = require_role("STUDENT")
+# With admin-only logins, ADMIN is allowed everywhere teachers or students could act.
+TeacherOnly = require_role("TEACHER", "ADMIN")
+StudentOnly = require_role("STUDENT", "ADMIN")
