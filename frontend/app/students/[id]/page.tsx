@@ -50,7 +50,7 @@ export default function StudentDetail() {
         <div className="hero">
           <p className="tag">Student</p>
           <h1 className="hero-title">{profile?.name || "Student Detail"}</h1>
-          <p className="hero-subtitle">Designed and Developed by Sajana</p>
+          <p className="hero-subtitle">Full profile, recent marks, and a one-click downloadable report.</p>
         </div>
         <button className="button inline" onClick={downloadReport}>
           Download Report Card

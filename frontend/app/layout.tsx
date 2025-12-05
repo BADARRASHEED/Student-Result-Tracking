@@ -3,8 +3,8 @@ import type { ReactNode } from "react";
 import ClientLayout from "./components/ClientLayout";
 
 export const metadata = {
-  title: "Sajana – Student Result Tracking & Performance Analytics System",
-  description: "Sajana Analytics: Designed and Developed by Sajana",
+  title: "Student Result Tracking & Performance Analytics",
+  description: "Streamlined academic insights with a clean, professional dashboard",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

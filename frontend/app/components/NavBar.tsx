@@ -22,8 +22,8 @@ export default function NavBar() {
   return (
     <header className="topbar">
       <div className="brand">
-        <span className="brand-title">Sajana – Student Result Tracking &amp; Performance Analytics System</span>
-        <span className="brand-subtitle">Sajana Analytics · Designed and Developed by Sajana</span>
+        <span className="brand-title">Student Result Tracking &amp; Performance Analytics</span>
+        <span className="brand-subtitle">Organize assessments, student profiles, and insights in one place</span>
       </div>
       <div className="user-chip">
         <div>
