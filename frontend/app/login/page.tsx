@@ -98,14 +98,6 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <div className="auth-meta">
-            <p className="auth-meta-title">Security and compliance essentials</p>
-            <ul className="auth-meta-list">
-              <li>Secure single sign-on ready</li>
-              <li>Audit-ready login trail</li>
-              <li>Centralized admin oversight</li>
-            </ul>
-          </div>
         </div>
       </div>
     </div>

@@ -190,46 +190,6 @@ textarea:focus {
   font-size: 0.9rem;
 }
 
-.auth-meta {
-  margin-top: 0.25rem;
-  padding: 1.15rem 1rem 0.75rem;
-  border-top: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  align-items: flex-start;
-}
-
-.auth-meta-title {
-  margin: 0;
-  color: var(--muted);
-  font-weight: 700;
-  letter-spacing: 0.01em;
-}
-
-.auth-meta-list {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  color: var(--text);
-  display: grid;
-  gap: 0.4rem;
-}
-
-.auth-meta-list li {
-  position: relative;
-  padding-left: 1.5rem;
-  font-weight: 600;
-}
-
-.auth-meta-list li::before {
-  content: "✓";
-  position: absolute;
-  left: 0;
-  color: var(--primary);
-  font-weight: 800;
-}
-
 .auth-footer {
   margin-top: 1.5rem;
   padding-top: 1rem;
