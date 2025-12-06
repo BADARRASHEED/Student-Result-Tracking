@@ -99,11 +99,8 @@ export default function LoginPage() {
           </form>
 
           <div className="auth-meta">
-            <div>
-              <p className="muted">System uptime guaranteed with monitored access controls.</p>
-              <p className="muted subtle">Need help? Contact platform support.</p>
-            </div>
-            <ul>
+            <p className="auth-meta-title">Security and compliance essentials</p>
+            <ul className="auth-meta-list">
               <li>Secure single sign-on ready</li>
               <li>Audit-ready login trail</li>
               <li>Centralized admin oversight</li>
