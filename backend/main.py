@@ -20,12 +20,20 @@ ensure_seed_data()
 
 app = FastAPI(title="Student Result Tracking & Analytics")
 
-origins = os.getenv("CORS_ORIGINS", "*").split(",")
+default_origins = "*"  # open by default to keep the hosted demo usable
+cors_origins = os.getenv("CORS_ORIGINS", default_origins)
+
+# Because wildcard origins cannot be combined with credentialed requests, fall
+# back to non-credentialed CORS when "*" is present. When explicit origins are
+# set, keep credentials enabled so browsers accept Authorization headers without
+# blocking.
+origins = [origin.strip() for origin in cors_origins.split(",") if origin.strip()]
+allow_credentials = "*" not in origins
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
-    allow_credentials=True,
+    allow_credentials=allow_credentials,
     allow_methods=["*"],
     allow_headers=["*"],
 )
