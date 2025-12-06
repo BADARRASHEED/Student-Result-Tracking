@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import date as date_type, datetime
 from typing import List, Optional
 from pydantic import BaseModel, EmailStr
 
@@ -85,7 +85,11 @@ class AssessmentBase(BaseModel):
     maximum_marks: int
     term: str
     subject_id: int
-    date: Optional[date] = None
+    # Use an explicit alias for the ``date`` type to avoid the field annotation
+    # being interpreted as ``NoneType`` during class creation, which caused
+    # Pydantic to expect ``None`` and reject actual ``date`` values returned
+    # from the database.
+    date: Optional[date_type] = None
 
 
 class AssessmentCreate(AssessmentBase):
