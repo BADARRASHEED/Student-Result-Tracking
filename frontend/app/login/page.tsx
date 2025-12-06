@@ -48,15 +48,16 @@ export default function LoginPage() {
     <div className="auth-shell">
       <div className="auth-card">
         <div className="auth-panel">
+          <div className="eyebrow">Student Result Tracking Suite</div>
           <div className="auth-header">
-            <h1>Admin sign in</h1>
-            <p className="muted">Enter your credentials to continue.</p>
+            <h1>Admin console access</h1>
+            <p className="muted">Sign in to manage results, users, and oversight workflows.</p>
           </div>
 
           <form className="auth-form" onSubmit={handleSubmit}>
             <div className="input-row">
               <label className="label" htmlFor="email">
-                Email
+                Work email
               </label>
               <input
                 id="email"
@@ -64,7 +65,7 @@ export default function LoginPage() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@school.edu"
+                placeholder="admin@school.edu"
                 autoComplete="username"
                 required
               />
@@ -80,7 +81,7 @@ export default function LoginPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Your password"
+                placeholder="Enter a secure password"
                 autoComplete="current-password"
                 required
               />
@@ -93,9 +94,21 @@ export default function LoginPage() {
             )}
 
             <button className="button full" type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Signing in..." : "Sign In"}
+              {isSubmitting ? "Signing in..." : "Sign in"}
             </button>
           </form>
+
+          <div className="auth-meta">
+            <div>
+              <p className="muted">System uptime guaranteed with monitored access controls.</p>
+              <p className="muted subtle">Need help? Contact platform support.</p>
+            </div>
+            <ul>
+              <li>Secure single sign-on ready</li>
+              <li>Audit-ready login trail</li>
+              <li>Centralized admin oversight</li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
