@@ -21,31 +21,42 @@ export default function NavBar() {
 
   return (
     <header className="topbar">
-      <div className="brand">
+      <Link href="/dashboard" className="brand brand-compact">
         <div className="brand-mark">RT</div>
         <div className="brand-copy">
-          <span className="brand-title">Result Tracking Workspace</span>
-          <span className="brand-subtitle">Curated dashboards, insights, and actions in one flow</span>
+          <span className="brand-title">Result Tracker</span>
+          <span className="brand-subtitle">Workspace</span>
         </div>
-      </div>
+      </Link>
 
       <div className="topbar-actions">
-        <div className="status-chip">
-          <span className="pulse-dot" aria-hidden /> Synced workspace
+        <nav className="main-nav" aria-label="Primary navigation">
+          <Link href="/dashboard" className="nav-pill">
+            Dashboard
+          </Link>
+          <Link href="/students" className="nav-pill">
+            Students
+          </Link>
+          <Link href="/marks" className="nav-pill">
+            Marks
+          </Link>
+        </nav>
+
+        <div className="status-chip subtle">
+          <span className="pulse-dot" aria-hidden /> Synced
         </div>
+
         <div className="user-chip">
+          <div className="user-avatar" aria-hidden>
+            {(name || "Admin").charAt(0).toUpperCase()}
+          </div>
           <div className="user-meta">
-            <div className="user-name">{name || "Admin Console"}</div>
-            <div className="pill strong">{role || "Admin only access"}</div>
+            <div className="user-name">{name || "Admin"}</div>
+            <div className="pill strong">{role || "Administrator"}</div>
           </div>
-          <div className="user-actions">
-            <Link href="/dashboard" className="button inline ghost">
-              Dashboard
-            </Link>
-            <button className="button inline" onClick={logout}>
-              Logout
-            </button>
-          </div>
+          <button className="button inline" onClick={logout}>
+            Logout
+          </button>
         </div>
       </div>
     </header>
