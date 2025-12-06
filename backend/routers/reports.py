@@ -90,16 +90,38 @@ def student_report(student_id: int, term: str = "Term 1", db: Session = Depends(
         p.setFont("Helvetica-Bold", 16)
         p.drawString(x_pos + 14, y_pos - 38, value)
 
+    column_config = [
+        {"title": "Assessment", "width": 0.30, "align": "left"},
+        {"title": "Subject", "width": 0.24, "align": "left"},
+        {"title": "Score", "width": 0.18, "align": "right"},
+        {"title": "Percent", "width": 0.14, "align": "right"},
+        {"title": "Grade", "width": 0.14, "align": "center"},
+    ]
+
+    def column_layout():
+        table_width = width - 2 * margin
+        inner_width = table_width - 24  # padding inside the table band
+        x_start = margin + 12
+        positions = []
+        cursor = x_start
+        for col in column_config:
+            col_width = inner_width * col["width"]
+            positions.append((cursor, col_width))
+            cursor += col_width
+        return positions
+
     def table_header(y_pos: float) -> None:
         p.setFillColor(deep_blue)
         p.roundRect(margin, y_pos - 18, width - 2 * margin, 32, 10, fill=1, stroke=0)
         p.setFillColor(colors.white)
         p.setFont("Helvetica-Bold", 11)
-        p.drawString(margin + 12, y_pos, "Assessment")
-        p.drawString(margin + 210, y_pos, "Subject")
-        p.drawString(margin + 360, y_pos, "Score")
-        p.drawString(margin + 452, y_pos, "Percent")
-        p.drawString(margin + 530, y_pos, "Grade")
+        for (x_pos, col_width), col in zip(column_layout(), column_config):
+            if col["align"] == "right":
+                p.drawRightString(x_pos + col_width - 2, y_pos, col["title"])
+            elif col["align"] == "center":
+                p.drawCentredString(x_pos + (col_width / 2), y_pos, col["title"])
+            else:
+                p.drawString(x_pos, y_pos, col["title"])
 
     def ensure_row_space(current_y: float) -> float:
         if current_y < 110:
@@ -172,17 +194,33 @@ def student_report(student_id: int, term: str = "Term 1", db: Session = Depends(
             p.setFillColor(row_color)
             p.roundRect(margin, y_position - 14, width - 2 * margin, 28, 8, fill=1, stroke=0)
 
+            positions = column_layout()
             p.setFillColor(midnight)
             p.setFont("Helvetica-Bold", 10.5)
-            p.drawString(margin + 12, y_position + 2, mark.assessment.name)
+            p.drawString(positions[0][0], y_position + 2, mark.assessment.name)
+
             p.setFillColor(muted)
             p.setFont("Helvetica", 10.5)
-            p.drawString(margin + 210, y_position + 2, mark.assessment.subject.name if mark.assessment.subject else "")
-            p.drawString(margin + 360, y_position + 2, f"{mark.marks_obtained}/{mark.assessment.maximum_marks}")
+            p.drawString(
+                positions[1][0],
+                y_position + 2,
+                mark.assessment.subject.name if mark.assessment.subject else "",
+            )
+            p.drawRightString(
+                positions[2][0] + positions[2][1] - 4,
+                y_position + 2,
+                f"{mark.marks_obtained}/{mark.assessment.maximum_marks}",
+            )
+
             p.setFillColor(deep_blue)
-            p.drawString(margin + 452, y_position + 2, f"{pct:.1f}%")
+            p.drawRightString(
+                positions[3][0] + positions[3][1] - 4, y_position + 2, f"{pct:.1f}%"
+            )
+
             p.setFillColor(cyan)
-            p.drawString(margin + 530, y_position + 2, grade)
+            p.drawCentredString(
+                positions[4][0] + (positions[4][1] / 2), y_position + 2, grade
+            )
 
             y_position -= 28
             y_position = ensure_row_space(y_position)
