@@ -25,153 +25,169 @@ def student_report(student_id: int, term: str = "Term 1", db: Session = Depends(
     p = canvas.Canvas(buffer, pagesize=letter)
     width, height = letter
 
-    margin = 50
-    brand = colors.HexColor("#0f172a")
-    accent = colors.HexColor("#0284c7")
-    subtle = colors.HexColor("#e2e8f0")
+    margin = 42
+    midnight = colors.HexColor("#0b1021")
+    deep_blue = colors.HexColor("#1e3a8a")
+    cyan = colors.HexColor("#22d3ee")
+    soft_bg = colors.HexColor("#f8fafc")
+    border = colors.HexColor("#e2e8f0")
+    muted = colors.HexColor("#475569")
 
-    def page_header():
-        p.setFillColor(brand)
-        p.roundRect(margin, height - 125, width - 2 * margin, 86, 12, fill=1, stroke=0)
+    def paint_canvas_backdrop() -> None:
+        p.setFillColor(soft_bg)
+        p.rect(0, 0, width, height, fill=1, stroke=0)
+        p.setFillColor(midnight)
+        p.roundRect(margin - 6, height - 170, width - 2 * (margin - 6), 140, 16, fill=1, stroke=0)
+        p.setFillColor(deep_blue)
+        p.roundRect(margin - 6, height - 210, width / 2.6, 60, 16, fill=1, stroke=0)
+
+    def header_block() -> None:
         p.setFillColor(colors.white)
         p.setFont("Helvetica-Bold", 18)
-        p.drawString(margin + 16, height - 70, "Sajana · Student Result Tracking")
+        p.drawString(margin + 8, height - 90, "Sajana Analytics • Student Performance")
         p.setFont("Helvetica", 11)
-        p.drawString(margin + 16, height - 88, "Performance & analytics snapshot")
+        p.drawString(margin + 8, height - 108, "Modern summary of grades, momentum, and insights")
+        p.setFont("Helvetica-Bold", 10)
+        p.setFillColor(cyan)
+        p.drawString(width - margin - 140, height - 96, term.upper())
+        p.setFillColor(colors.white)
+        p.setFont("Helvetica", 9)
+        p.drawString(width - margin - 140, height - 112, "Generated on: " + date.today().strftime("%b %d, %Y"))
 
-    def info_panel():
-        panel_height = 64
-        y_pos = height - 154
-        p.setFillColor(colors.HexColor("#f8fafc"))
-        p.roundRect(margin, y_pos - panel_height + 8, width - 2 * margin, panel_height, 12, fill=1, stroke=0)
-        p.setFillColor(subtle)
-        p.roundRect(margin, y_pos - panel_height + 8, width - 2 * margin, panel_height, 12, fill=0, stroke=1)
-        p.setFillColor(brand)
-        p.setFont("Helvetica-Bold", 12)
-        p.drawString(margin + 16, y_pos, student.name)
-        p.setFont("Helvetica", 10)
-        p.setFillColor(colors.HexColor("#334155"))
+    def student_identity_card(start_y: float) -> float:
+        card_height = 86
+        p.setFillColor(colors.white)
+        p.roundRect(margin, start_y - card_height, width - 2 * margin, card_height, 12, fill=1, stroke=0)
+        p.setStrokeColor(border)
+        p.roundRect(margin, start_y - card_height, width - 2 * margin, card_height, 12, fill=0, stroke=1)
+
+        p.setFillColor(midnight)
+        p.setFont("Helvetica-Bold", 14)
+        p.drawString(margin + 16, start_y - 18, student.name)
+        p.setFont("Helvetica", 10.5)
+        p.setFillColor(muted)
         class_name = student.class_obj.name if student.class_obj else "N/A"
-        p.drawString(margin + 16, y_pos - 16, f"Roll: {student.roll_number}  |  Class: {class_name}  |  Term: {term}")
-        p.setFillColor(accent)
-        p.drawString(margin + 16, y_pos - 32, "Generated via Sajana Analytics")
+        p.drawString(margin + 16, start_y - 34, f"Roll #{student.roll_number}  •  Class {class_name}")
+        p.drawString(margin + 16, start_y - 50, "Report powered by Sajana Insights")
 
-    def draw_table_header(y_pos: float):
-        p.setFillColor(colors.HexColor("#f1f5f9"))
-        p.roundRect(margin, y_pos - 14, width - 2 * margin, 28, 8, fill=1, stroke=0)
-        p.setFillColor(brand)
+        p.setFillColor(deep_blue)
+        p.roundRect(width - margin - 120, start_y - 46, 110, 34, 10, fill=1, stroke=0)
+        p.setFillColor(colors.white)
         p.setFont("Helvetica-Bold", 11)
-        p.drawString(margin + 8, y_pos + 4, "Assessment")
-        p.drawString(margin + 200, y_pos + 4, "Subject")
-        p.drawString(margin + 350, y_pos + 4, "Score")
-        p.drawString(margin + 430, y_pos + 4, "Percent")
-        p.drawString(margin + 500, y_pos + 4, "Grade")
+        p.drawString(width - margin - 108, start_y - 24, "Student Profile")
+        return start_y - card_height - 16
 
-    def ensure_space(current_y: float) -> float:
+    def stat_chip(x_pos: float, y_pos: float, title: str, value: str, highlight: colors.Color) -> None:
+        chip_width = (width - 2 * margin - 24) / 3
+        p.setFillColor(colors.white)
+        p.roundRect(x_pos, y_pos - 66, chip_width, 66, 10, fill=1, stroke=0)
+        p.setStrokeColor(border)
+        p.roundRect(x_pos, y_pos - 66, chip_width, 66, 10, fill=0, stroke=1)
+        p.setFillColor(muted)
+        p.setFont("Helvetica", 10)
+        p.drawString(x_pos + 14, y_pos - 20, title)
+        p.setFillColor(highlight)
+        p.setFont("Helvetica-Bold", 16)
+        p.drawString(x_pos + 14, y_pos - 38, value)
+
+    def table_header(y_pos: float) -> None:
+        p.setFillColor(deep_blue)
+        p.roundRect(margin, y_pos - 18, width - 2 * margin, 32, 10, fill=1, stroke=0)
+        p.setFillColor(colors.white)
+        p.setFont("Helvetica-Bold", 11)
+        p.drawString(margin + 12, y_pos, "Assessment")
+        p.drawString(margin + 210, y_pos, "Subject")
+        p.drawString(margin + 360, y_pos, "Score")
+        p.drawString(margin + 452, y_pos, "Percent")
+        p.drawString(margin + 530, y_pos, "Grade")
+
+    def ensure_row_space(current_y: float) -> float:
         if current_y < 110:
             p.showPage()
-            page_header()
-            info_panel()
-            new_y = height - 220
-            draw_table_header(new_y)
-            return new_y - 26
+            paint_canvas_backdrop()
+            header_block()
+            after_header = student_identity_card(height - 200)
+            summary_band(after_header)
+            new_y = after_header - 120
+            table_header(new_y)
+            return new_y - 28
         return current_y
 
-    page_header()
-    info_panel()
+    def summary_band(start_y: float) -> float:
+        metrics_y = start_y - 12
+        stat_chip(margin, metrics_y, "Overall Percentage", f"{overall}%", cyan)
+        stat_chip(margin + ((width - 2 * margin - 24) / 3) + 12, metrics_y, "Overall Grade", overall_grade, deep_blue)
+        stat_chip(margin + 2 * ((width - 2 * margin - 24) / 3) + 24, metrics_y, "Assessments", str(len(term_marks)), midnight)
+        return metrics_y - 78
+
+    def narrative_block(start_y: float) -> None:
+        p.setFillColor(colors.white)
+        p.roundRect(margin, start_y - 86, width - 2 * margin, 86, 12, fill=1, stroke=0)
+        p.setStrokeColor(border)
+        p.roundRect(margin, start_y - 86, width - 2 * margin, 86, 12, fill=0, stroke=1)
+        p.setFillColor(midnight)
+        p.setFont("Helvetica-Bold", 11)
+        p.drawString(margin + 14, start_y - 22, "Coach Notes")
+        p.setFillColor(muted)
+        p.setFont("Helvetica", 10.5)
+        p.drawString(margin + 14, start_y - 42, comment)
+        p.setFillColor(cyan)
+        p.setFont("Helvetica", 9)
+        p.drawString(margin + 14, start_y - 62, "Shareable, printer ready, and aligned to Sajana's new visual system")
+
+    paint_canvas_backdrop()
+    header_block()
 
     term_marks = [mark for mark in student.marks if mark.assessment.term == term]
     term_marks.sort(key=lambda m: (m.assessment.date or date.min, m.assessment.name))
 
-    y = height - 220
-    draw_table_header(y)
-    y -= 26
-    total_pct = []
-
-    if not term_marks:
-        p.setFillColor(brand)
-        p.setFont("Helvetica", 11)
-        p.drawString(margin, y, "No assessments available for this term.")
-        y -= 22
-    else:
-        for idx, mark in enumerate(term_marks):
-            pct = calculate_percentage(mark.marks_obtained, mark.assessment.maximum_marks)
-            grade = grade_from_percentage(pct)
-            total_pct.append(pct)
-
-            row_fill = colors.HexColor("#f8fafc") if idx % 2 == 0 else colors.white
-            p.setFillColor(row_fill)
-            p.roundRect(margin, y - 12, width - 2 * margin, 24, 6, fill=1, stroke=0)
-
-            p.setFillColor(brand)
-            p.setFont("Helvetica", 10.5)
-            p.drawString(margin + 8, y + 2, mark.assessment.name)
-            p.setFillColor(colors.HexColor("#475569"))
-            p.drawString(margin + 200, y + 2, mark.assessment.subject.name if mark.assessment.subject else "")
-            p.drawString(margin + 350, y + 2, f"{mark.marks_obtained}/{mark.assessment.maximum_marks}")
-            p.drawString(margin + 430, y + 2, f"{pct:.1f}%")
-            p.drawString(margin + 500, y + 2, grade)
-
-            y -= 26
-            y = ensure_space(y)
-
+    total_pct = [calculate_percentage(m.marks_obtained, m.assessment.maximum_marks) for m in term_marks]
     overall = round(sum(total_pct) / len(total_pct), 2) if total_pct else 0
     overall_grade = grade_from_percentage(overall)
 
-    summary_y = y - 6
-    if summary_y - 90 < margin:
-        p.showPage()
-        page_header()
-        info_panel()
-        y = height - 220
-        summary_y = y - 6
+    comment = "Building foundation — add more practice sessions"
+    if overall >= 90:
+        comment = "Outstanding mastery — keep challenging with advanced material"
+    elif overall >= 75:
+        comment = "Great momentum — maintain consistency and stretch goals"
+    elif overall >= 60:
+        comment = "Solid progress — focus on weak topics for next term"
 
-    card_width = (width - 2 * margin - 12) / 2
+    y_position = student_identity_card(height - 200)
+    y_position = summary_band(y_position)
 
-    p.setFillColor(colors.white)
-    p.roundRect(margin, summary_y - 46, card_width, 52, 10, fill=1, stroke=0)
-    p.setStrokeColor(subtle)
-    p.roundRect(margin, summary_y - 46, card_width, 52, 10, fill=0, stroke=1)
-    p.setFillColor(brand)
-    p.setFont("Helvetica-Bold", 12)
-    p.drawString(margin + 14, summary_y - 18, "Overall Percentage")
-    p.setFillColor(accent)
-    p.setFont("Helvetica-Bold", 16)
-    p.drawString(margin + 14, summary_y - 32, f"{overall}%")
+    table_header(y_position)
+    y_position -= 28
 
-    p.setFillColor(colors.white)
-    p.roundRect(margin + card_width + 12, summary_y - 46, card_width, 52, 10, fill=1, stroke=0)
-    p.setStrokeColor(subtle)
-    p.roundRect(margin + card_width + 12, summary_y - 46, card_width, 52, 10, fill=0, stroke=1)
-    p.setFillColor(brand)
-    p.setFont("Helvetica-Bold", 12)
-    p.drawString(margin + card_width + 26, summary_y - 18, "Overall Grade")
-    p.setFillColor(accent)
-    p.setFont("Helvetica-Bold", 16)
-    p.drawString(margin + card_width + 26, summary_y - 32, overall_grade)
+    if not term_marks:
+        p.setFillColor(muted)
+        p.setFont("Helvetica", 11)
+        p.drawString(margin, y_position, "No assessments available for this term.")
+        y_position -= 24
+    else:
+        for index, mark in enumerate(term_marks):
+            pct = calculate_percentage(mark.marks_obtained, mark.assessment.maximum_marks)
+            grade = grade_from_percentage(pct)
+            row_color = colors.HexColor("#e0f2fe") if index % 2 == 0 else colors.white
+            p.setFillColor(row_color)
+            p.roundRect(margin, y_position - 14, width - 2 * margin, 28, 8, fill=1, stroke=0)
 
-    comment = "Needs improvement"
-    if overall >= 85:
-        comment = "Excellent performance"
-    elif overall >= 70:
-        comment = "Consistent, keep it up"
-    elif overall >= 55:
-        comment = "Satisfactory progress"
+            p.setFillColor(midnight)
+            p.setFont("Helvetica-Bold", 10.5)
+            p.drawString(margin + 12, y_position + 2, mark.assessment.name)
+            p.setFillColor(muted)
+            p.setFont("Helvetica", 10.5)
+            p.drawString(margin + 210, y_position + 2, mark.assessment.subject.name if mark.assessment.subject else "")
+            p.drawString(margin + 360, y_position + 2, f"{mark.marks_obtained}/{mark.assessment.maximum_marks}")
+            p.setFillColor(deep_blue)
+            p.drawString(margin + 452, y_position + 2, f"{pct:.1f}%")
+            p.setFillColor(cyan)
+            p.drawString(margin + 530, y_position + 2, grade)
 
-    note_y = summary_y - 64
-    p.setFillColor(colors.HexColor("#f8fafc"))
-    p.roundRect(margin, note_y - 42, width - 2 * margin, 52, 10, fill=1, stroke=0)
-    p.setStrokeColor(subtle)
-    p.roundRect(margin, note_y - 42, width - 2 * margin, 52, 10, fill=0, stroke=1)
-    p.setFillColor(brand)
-    p.setFont("Helvetica-Bold", 11)
-    p.drawString(margin + 14, note_y - 14, "Comment")
-    p.setFont("Helvetica", 10.5)
-    p.setFillColor(colors.HexColor("#475569"))
-    p.drawString(margin + 14, note_y - 28, comment)
-    p.setFillColor(colors.HexColor("#94a3b8"))
-    p.setFont("Helvetica", 9)
-    p.drawString(margin + 14, note_y - 40, "Generated with Sajana Analytics • Clear, concise, and ready to share")
+            y_position -= 28
+            y_position = ensure_row_space(y_position)
+
+    narrative_block(y_position)
 
     p.showPage()
     p.save()
