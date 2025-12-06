@@ -31,14 +31,20 @@ export default function NavBar() {
 
       <div className="topbar-actions">
         <div className="user-chip">
-          <div className="user-avatar" aria-hidden>
-            {(name || "Admin").charAt(0).toUpperCase()}
+          <div className="user-avatar-block">
+            <div className="user-avatar" aria-hidden>
+              {(name || "Admin").charAt(0).toUpperCase()}
+            </div>
+            <span className="user-status">Signed in</span>
           </div>
           <div className="user-meta">
-            <div className="user-name">{name || "Admin"}</div>
-            <div className="pill strong">{role || "Administrator"}</div>
+            <div className="user-name-row">
+              <div className="user-name">{name || "Admin"}</div>
+              <div className="role-chip">{role || "Administrator"}</div>
+            </div>
+            <div className="muted small">Secure workspace access</div>
           </div>
-          <button className="button inline" onClick={logout}>
+          <button className="button ghost" onClick={logout}>
             Logout
           </button>
         </div>
