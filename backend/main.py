@@ -26,6 +26,7 @@ app = FastAPI(title="Student Result Tracking & Analytics")
 # of allowed origins by default so local development works without extra envs.
 default_origins = "http://localhost:3000,http://127.0.0.1:3000"
 origins = [origin.strip() for origin in os.getenv("CORS_ORIGINS", default_origins).split(",") if origin.strip()]
+allow_credentials = os.getenv("CORS_ALLOW_CREDENTIALS", "true").lower() == "true"
 
 app.add_middleware(
     CORSMiddleware,
