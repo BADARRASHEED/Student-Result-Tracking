@@ -80,149 +80,151 @@ export default function StudentDetail() {
 
   return (
     <div className="student-page">
-      <div className="profile-banner">
-        <div className="banner-main">
-          <p className="tag subtle">Student snapshot</p>
-          <h1 className="hero-title">{profile?.name || "Student Detail"}</h1>
-          <p className="hero-subtitle">
-            A consolidated view of class performance, assessment history, and a downloadable report card.
-          </p>
-          {profile && (
-            <div className="badge-row">
-              <span className="pill soft">Roll {profile.roll_number}</span>
-              <span className="pill subtle">Class {profile.class_name}</span>
-              <span className="pill muted">{profile.marks.length} assessments</span>
+      <div className="result-card">
+        <div className="result-header">
+          <div className="header-copy">
+            <p className="micro-label">Student result card</p>
+            <h1 className="result-title">{profile?.name || "Student Detail"}</h1>
+            <p className="muted">
+              A clean summary of grades, term highlights, and a downloadable report.
+            </p>
+            {profile && (
+              <div className="result-meta">
+                <span className="chip">Roll {profile.roll_number}</span>
+                <span className="chip subtle">Class {profile.class_name}</span>
+                <span className="chip muted">{profile.marks.length} assessments</span>
+              </div>
+            )}
+          </div>
+
+          {summary && (
+            <div className="summary-box">
+              <p className="label">Overall grade</p>
+              <div className="grade-display">{summary.grade}</div>
+              <p className="summary-number">{summary.overall}% average</p>
+              <button className="button secondary" onClick={downloadReport}>
+                Download PDF
+              </button>
             </div>
           )}
         </div>
-        <div className="banner-actions">
-          <div className="pill strong">Term 1 Report</div>
-          <button className="button inline" onClick={downloadReport}>
-            Download PDF
-          </button>
-        </div>
-      </div>
 
-      {error && <p style={{ color: "#f97316" }}>{error}</p>}
+        {error && <p className="error-text">{error}</p>}
 
-      {summary && (
-        <div className="stat-grid">
-          <div className="stat-card accent">
-            <div className="stat-card-heading">
+        {summary && (
+          <div className="result-stats">
+            <div className="stat-tile">
               <p className="metric-label">Overall percentage</p>
-              <span className="pill strong">Grade {summary.grade}</span>
+              <div className="stat-value">{summary.overall}%</div>
+              <p className="metric-sub">Average across recorded assessments.</p>
             </div>
-            <div className="stat-card-value">{summary.overall}%</div>
-            <p className="metric-sub">Weighted average across all recorded assessments.</p>
+            <div className="stat-tile">
+              <p className="metric-label">Assessments</p>
+              <div className="stat-value">{summary.assessments}</div>
+              <p className="metric-sub">Quizzes, midterms, and exams.</p>
+            </div>
+            <div className="stat-tile">
+              <p className="metric-label">Top subject</p>
+              <div className="stat-value small">
+                <span>{summary.bestSubject?.subject || "–"}</span>
+                {summary.bestSubject && <span className="chip subtle">{summary.bestSubject.average}% avg</span>}
+              </div>
+              <p className="metric-sub">Highest performing subject for the term.</p>
+            </div>
           </div>
+        )}
 
-          <div className="stat-card">
-            <p className="metric-label">Assessments logged</p>
-            <div className="stat-card-value">{summary.assessments}</div>
-            <p className="metric-sub">Includes quizzes, midterms, and consolidated exams.</p>
-          </div>
-
-          <div className="stat-card soft">
-            <p className="metric-label">Top subject</p>
-            <div className="stat-card-value small">
-              <span>{summary.bestSubject?.subject || "–"}</span>
-              {summary.bestSubject && <span className="pill subtle">{summary.bestSubject.average}% avg</span>}
-            </div>
-            <p className="metric-sub">Highest performing subject based on term scores.</p>
-          </div>
-        </div>
-      )}
-
-      {profile && (
-        <div className="grid grid-2 stretch">
-          <div className="card profile-panel">
-            <div className="panel-heading">
-              <div>
-                <p className="metric-label">Student information</p>
-                <h3 className="panel-title">{profile.name}</h3>
-              </div>
-              {summary && <span className="badge success">On track</span>}
-            </div>
-            <div className="info-list">
-              <div className="info-row">
-                <span className="info-label">Roll number</span>
-                <span className="info-value">{profile.roll_number}</span>
-              </div>
-              <div className="info-row">
-                <span className="info-label">Class</span>
-                <span className="info-value">{profile.class_name}</span>
-              </div>
-              <div className="info-row">
-                <span className="info-label">Report email</span>
-                <span className="info-value muted">
-                  {profile.name.toLowerCase().split(" ").join(".")}@example.com
-                </span>
-              </div>
-            </div>
-          </div>
-          {trend && (
-            <div className="card chart-card">
+        {profile && (
+          <div className="result-grid">
+            <div className="result-panel">
               <div className="panel-heading">
                 <div>
-                  <p className="metric-label">Performance trend</p>
-                  <h3 className="panel-title">Recent assessments</h3>
+                  <p className="metric-label">Student information</p>
+                  <h3 className="panel-title">{profile.name}</h3>
                 </div>
-                <span className="pill subtle">Percentage</span>
+                {summary && <span className="chip success">On track</span>}
               </div>
-              <Line
-                data={{
-                  labels: trend.trend.map((p: any) => p.assessment),
-                  datasets: [
-                    {
-                      label: "Percentage",
-                      data: trend.trend.map((p: any) => p.percentage),
-                      borderColor: "#2563eb",
-                      backgroundColor: "rgba(37, 99, 235, 0.16)",
-                      tension: 0.35,
-                    },
-                  ],
-                }}
-              />
+              <dl className="detail-list">
+                <div className="detail-row">
+                  <dt>Roll number</dt>
+                  <dd>{profile.roll_number}</dd>
+                </div>
+                <div className="detail-row">
+                  <dt>Class</dt>
+                  <dd>{profile.class_name}</dd>
+                </div>
+                <div className="detail-row">
+                  <dt>Report email</dt>
+                  <dd className="muted">{profile.name.toLowerCase().split(" ").join(".")}@example.com</dd>
+                </div>
+              </dl>
             </div>
-          )}
-        </div>
-      )}
 
-      {profile && (
-        <div className="card table-card">
-          <div className="panel-heading">
-            <div>
-              <p className="metric-label">Assessment breakdown</p>
-              <h3 className="panel-title">Term 1 performance</h3>
-            </div>
-            <p className="metric-sub">Sorted by assessment order.</p>
+            {trend && (
+              <div className="result-panel chart-panel">
+                <div className="panel-heading">
+                  <div>
+                    <p className="metric-label">Performance trend</p>
+                    <h3 className="panel-title">Recent assessments</h3>
+                  </div>
+                  <span className="chip subtle">Percentage</span>
+                </div>
+                <Line
+                  data={{
+                    labels: trend.trend.map((p: any) => p.assessment),
+                    datasets: [
+                      {
+                        label: "Percentage",
+                        data: trend.trend.map((p: any) => p.percentage),
+                        borderColor: "#1f2937",
+                        backgroundColor: "rgba(31, 41, 55, 0.08)",
+                        tension: 0.3,
+                      },
+                    ],
+                  }}
+                  options={{ plugins: { legend: { display: false } } }}
+                />
+              </div>
+            )}
           </div>
-          <table className="table modern-table">
-            <thead>
-              <tr>
-                <th>Assessment</th>
-                <th>Subject</th>
-                <th>Term</th>
-                <th>Score</th>
-                <th className="text-right">%</th>
-              </tr>
-            </thead>
-            <tbody>
-              {profile.marks.map((m: any, idx: number) => (
-                <tr key={`${m.assessment}-${idx}`}>
-                  <td>{m.assessment}</td>
-                  <td>{m.subject}</td>
-                  <td>{m.term}</td>
-                  <td>
-                    {m.score}/{m.maximum}
-                  </td>
-                  <td className="text-right">{m.percentage}%</td>
+        )}
+
+        {profile && (
+          <div className="result-panel table-panel">
+            <div className="panel-heading">
+              <div>
+                <p className="metric-label">Assessment breakdown</p>
+                <h3 className="panel-title">Term 1 performance</h3>
+              </div>
+              <p className="metric-sub">Sorted by assessment order.</p>
+            </div>
+            <table className="table simple-table">
+              <thead>
+                <tr>
+                  <th>Assessment</th>
+                  <th>Subject</th>
+                  <th>Term</th>
+                  <th>Score</th>
+                  <th className="text-right">%</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+              </thead>
+              <tbody>
+                {profile.marks.map((m: any, idx: number) => (
+                  <tr key={`${m.assessment}-${idx}`}>
+                    <td>{m.assessment}</td>
+                    <td>{m.subject}</td>
+                    <td>{m.term}</td>
+                    <td>
+                      {m.score}/{m.maximum}
+                    </td>
+                    <td className="text-right">{m.percentage}%</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
