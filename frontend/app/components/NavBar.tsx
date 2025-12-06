@@ -22,20 +22,31 @@ export default function NavBar() {
   return (
     <header className="topbar">
       <div className="brand">
-        <span className="brand-title">Result Tracking Workspace</span>
-        <span className="brand-subtitle">Streamlined dashboards, students, marks, and analytics in one flow</span>
-      </div>
-      <div className="user-chip">
-        <div>
-          <div style={{ fontWeight: 600 }}>{name || "Admin Console"}</div>
-          <div className="pill">{role || "Admin only access"}</div>
+        <div className="brand-mark">RT</div>
+        <div className="brand-copy">
+          <span className="brand-title">Result Tracking Workspace</span>
+          <span className="brand-subtitle">Curated dashboards, insights, and actions in one flow</span>
         </div>
-        <Link href="/dashboard" className="button inline secondary">
-          Dashboard
-        </Link>
-        <button className="button inline" onClick={logout}>
-          Logout
-        </button>
+      </div>
+
+      <div className="topbar-actions">
+        <div className="status-chip">
+          <span className="pulse-dot" aria-hidden /> Synced workspace
+        </div>
+        <div className="user-chip">
+          <div className="user-meta">
+            <div className="user-name">{name || "Admin Console"}</div>
+            <div className="pill strong">{role || "Admin only access"}</div>
+          </div>
+          <div className="user-actions">
+            <Link href="/dashboard" className="button inline ghost">
+              Dashboard
+            </Link>
+            <button className="button inline" onClick={logout}>
+              Logout
+            </button>
+          </div>
+        </div>
       </div>
     </header>
   );
