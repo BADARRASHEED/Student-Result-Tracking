@@ -20,15 +20,12 @@ ensure_seed_data()
 
 app = FastAPI(title="Student Result Tracking & Analytics")
 
-default_origins = "*"  # open by default to keep the hosted demo usable
-cors_origins = os.getenv("CORS_ORIGINS", default_origins)
-
-# Because wildcard origins cannot be combined with credentialed requests, fall
-# back to non-credentialed CORS when "*" is present. When explicit origins are
-# set, keep credentials enabled so browsers accept Authorization headers without
-# blocking.
-origins = [origin.strip() for origin in cors_origins.split(",") if origin.strip()]
-allow_credentials = "*" not in origins
+# Browsers will reject credentialed requests when the server responds with
+# `Access-Control-Allow-Origin: *`. That resulted in the frontend failing with a
+# generic "Failed to fetch" error on pages like Marks Entry. Use a concrete set
+# of allowed origins by default so local development works without extra envs.
+default_origins = "http://localhost:3000,http://127.0.0.1:3000"
+origins = [origin.strip() for origin in os.getenv("CORS_ORIGINS", default_origins).split(",") if origin.strip()]
 
 app.add_middleware(
     CORSMiddleware,
