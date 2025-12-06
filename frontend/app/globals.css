@@ -266,87 +266,145 @@ textarea:focus {
   background: #f5f7fb;
 }
 
-.topbar {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: linear-gradient(90deg, rgba(45, 112, 255, 0.06), rgba(31, 182, 255, 0.04));
-  border-bottom: 1px solid var(--border);
-  backdrop-filter: blur(14px);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1.1rem 1.6rem;
-  box-shadow: 0 18px 30px rgba(0, 36, 94, 0.04);
-}
+ .topbar {
+   position: sticky;
+   top: 0;
+   z-index: 10;
+   background: #ffffff;
+   border-bottom: 1px solid rgba(45, 112, 255, 0.1);
+   backdrop-filter: blur(12px);
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+   padding: 0.9rem 1.6rem;
+   box-shadow: 0 16px 36px rgba(0, 36, 94, 0.06);
+ }
 
-.brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.75rem;
-}
+ .brand {
+   display: inline-flex;
+   align-items: center;
+   gap: 0.75rem;
+   text-decoration: none;
+ }
 
-.brand-copy {
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-}
+ .brand-compact {
+   padding: 0.35rem 0.4rem;
+   border-radius: 12px;
+   transition: all 0.15s ease;
+ }
 
-.brand-mark {
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  display: grid;
-  place-items: center;
-  background: linear-gradient(135deg, rgba(45, 112, 255, 0.16), rgba(31, 182, 255, 0.26));
-  border: 1px solid rgba(45, 112, 255, 0.3);
-  font-weight: 800;
-  color: var(--text);
-}
+ .brand-compact:hover {
+   background: rgba(45, 112, 255, 0.06);
+   transform: translateY(-1px);
+ }
 
-.brand-title {
-  font-weight: 800;
-  letter-spacing: 0.4px;
-}
+ .brand-copy {
+   display: flex;
+   flex-direction: column;
+   gap: 0.15rem;
+ }
 
-.brand-subtitle {
-  color: var(--muted);
-  font-size: 0.92rem;
-}
+ .brand-mark {
+   width: 40px;
+   height: 40px;
+   border-radius: 12px;
+   display: grid;
+   place-items: center;
+   background: linear-gradient(135deg, #1b68ff, #3db8ff);
+   border: 1px solid rgba(45, 112, 255, 0.2);
+   font-weight: 800;
+   color: #ffffff;
+ }
 
-.topbar-actions {
-  display: flex;
-  align-items: center;
-  gap: 1.15rem;
-}
+ .brand-title {
+   font-weight: 800;
+   letter-spacing: 0.4px;
+ }
 
-.status-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.55rem 0.75rem;
-  border-radius: 999px;
-  background: rgba(34, 197, 94, 0.12);
-  border: 1px solid rgba(34, 197, 94, 0.35);
-  color: #166534;
-  font-weight: 700;
-}
+ .brand-subtitle {
+   color: var(--muted);
+   font-size: 0.92rem;
+ }
 
-.pulse-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 999px;
-  background: #22c55e;
-  box-shadow: 0 0 0 6px rgba(34, 197, 94, 0.18);
-  display: inline-block;
-}
+ .topbar-actions {
+   display: flex;
+   align-items: center;
+   gap: 0.9rem;
+ }
 
-.user-chip {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  color: var(--muted);
-}
+ .topbar-actions nav {
+   display: flex;
+   align-items: center;
+   gap: 0.35rem;
+ }
+
+ .nav-pill {
+   padding: 0.65rem 0.95rem;
+   border-radius: 999px;
+   border: 1px solid rgba(45, 112, 255, 0.14);
+   background: rgba(45, 112, 255, 0.06);
+   color: var(--text);
+   font-weight: 700;
+   transition: all 0.15s ease;
+ }
+
+ .nav-pill:hover {
+   background: linear-gradient(90deg, rgba(45, 112, 255, 0.18), rgba(31, 182, 255, 0.14));
+   border-color: rgba(45, 112, 255, 0.26);
+   color: #0f172a;
+   box-shadow: 0 10px 24px rgba(45, 112, 255, 0.12);
+ }
+
+ .status-chip {
+   display: inline-flex;
+   align-items: center;
+   gap: 0.4rem;
+   padding: 0.55rem 0.75rem;
+   border-radius: 999px;
+   background: rgba(34, 197, 94, 0.12);
+   border: 1px solid rgba(34, 197, 94, 0.35);
+   color: #166534;
+   font-weight: 700;
+ }
+
+ .status-chip.subtle {
+   background: rgba(45, 112, 255, 0.08);
+   border-color: rgba(45, 112, 255, 0.2);
+   color: #17439d;
+ }
+
+ .pulse-dot {
+   width: 10px;
+   height: 10px;
+   border-radius: 999px;
+   background: #22c55e;
+   box-shadow: 0 0 0 6px rgba(34, 197, 94, 0.18);
+   display: inline-block;
+ }
+
+ .user-chip {
+   display: flex;
+   align-items: center;
+   gap: 0.85rem;
+   color: var(--muted);
+   padding: 0.45rem 0.7rem;
+   border-radius: 14px;
+   background: rgba(45, 112, 255, 0.05);
+   border: 1px solid rgba(45, 112, 255, 0.12);
+   box-shadow: 0 10px 24px rgba(0, 36, 94, 0.06);
+ }
+
+ .user-avatar {
+   width: 38px;
+   height: 38px;
+   border-radius: 12px;
+   display: grid;
+   place-items: center;
+   background: linear-gradient(135deg, rgba(45, 112, 255, 0.24), rgba(31, 182, 255, 0.2));
+   color: #0f172a;
+   font-weight: 800;
+   border: 1px solid rgba(45, 112, 255, 0.18);
+ }
 
 .user-meta {
   display: flex;
