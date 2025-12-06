@@ -79,62 +79,96 @@ export default function StudentDetail() {
   };
 
   return (
-    <div>
-      <div className="section-header">
-        <div className="hero">
-          <p className="tag">Student</p>
+    <div className="student-page">
+      <div className="profile-banner">
+        <div className="banner-main">
+          <p className="tag subtle">Student snapshot</p>
           <h1 className="hero-title">{profile?.name || "Student Detail"}</h1>
-          <p className="hero-subtitle">Full profile, recent marks, and a one-click downloadable report.</p>
+          <p className="hero-subtitle">
+            A consolidated view of class performance, assessment history, and a downloadable report card.
+          </p>
+          {profile && (
+            <div className="badge-row">
+              <span className="pill soft">Roll {profile.roll_number}</span>
+              <span className="pill subtle">Class {profile.class_name}</span>
+              <span className="pill muted">{profile.marks.length} assessments</span>
+            </div>
+          )}
         </div>
-        <div className="report-actions">
-          <div className="pill strong">Term 1 report card</div>
+        <div className="banner-actions">
+          <div className="pill strong">Term 1 Report</div>
           <button className="button inline" onClick={downloadReport}>
             Download PDF
           </button>
         </div>
       </div>
-      {error && <p style={{ color: "#f87171" }}>{error}</p>}
+
+      {error && <p style={{ color: "#f97316" }}>{error}</p>}
 
       {summary && (
-        <div className="grid grid-3 report-summary">
-          <div className="metric-card">
-            <p className="metric-label">Overall score</p>
-            <div className="metric-value">
-              <span>{summary.overall}%</span>
+        <div className="stat-grid">
+          <div className="stat-card accent">
+            <div className="stat-card-heading">
+              <p className="metric-label">Overall percentage</p>
               <span className="pill strong">Grade {summary.grade}</span>
             </div>
-            <p className="metric-sub">Average percentage across recorded assessments.</p>
+            <div className="stat-card-value">{summary.overall}%</div>
+            <p className="metric-sub">Weighted average across all recorded assessments.</p>
           </div>
-          <div className="metric-card soft">
-            <p className="metric-label">Assessments</p>
-            <div className="metric-value">
-              <span>{summary.assessments}</span>
-              <span className="pill subtle">Term records</span>
-            </div>
-            <p className="metric-sub">Recent quizzes, midterms, and finals included.</p>
+
+          <div className="stat-card">
+            <p className="metric-label">Assessments logged</p>
+            <div className="stat-card-value">{summary.assessments}</div>
+            <p className="metric-sub">Includes quizzes, midterms, and consolidated exams.</p>
           </div>
-          <div className="metric-card highlight">
+
+          <div className="stat-card soft">
             <p className="metric-label">Top subject</p>
-            <div className="metric-value">
+            <div className="stat-card-value small">
               <span>{summary.bestSubject?.subject || "–"}</span>
-              {summary.bestSubject && <span className="pill strong">{summary.bestSubject.average}% avg</span>}
+              {summary.bestSubject && <span className="pill subtle">{summary.bestSubject.average}% avg</span>}
             </div>
-            <p className="metric-sub">Highest-performing subject based on term marks.</p>
+            <p className="metric-sub">Highest performing subject based on term scores.</p>
           </div>
         </div>
       )}
 
       {profile && (
-        <div className="grid grid-2">
-          <div className="card">
-            <h3>Student Information</h3>
-            <p className="hero-subtitle">Roll Number: {profile.roll_number}</p>
-            <p className="hero-subtitle">Class: {profile.class_name}</p>
-            <p className="hero-subtitle">Email mapping: {profile.name.toLowerCase().split(" ").join(".")}@example.com</p>
+        <div className="grid grid-2 stretch">
+          <div className="card profile-panel">
+            <div className="panel-heading">
+              <div>
+                <p className="metric-label">Student information</p>
+                <h3 className="panel-title">{profile.name}</h3>
+              </div>
+              {summary && <span className="badge success">On track</span>}
+            </div>
+            <div className="info-list">
+              <div className="info-row">
+                <span className="info-label">Roll number</span>
+                <span className="info-value">{profile.roll_number}</span>
+              </div>
+              <div className="info-row">
+                <span className="info-label">Class</span>
+                <span className="info-value">{profile.class_name}</span>
+              </div>
+              <div className="info-row">
+                <span className="info-label">Report email</span>
+                <span className="info-value muted">
+                  {profile.name.toLowerCase().split(" ").join(".")}@example.com
+                </span>
+              </div>
+            </div>
           </div>
           {trend && (
-            <div className="card">
-              <h3>Performance Trend</h3>
+            <div className="card chart-card">
+              <div className="panel-heading">
+                <div>
+                  <p className="metric-label">Performance trend</p>
+                  <h3 className="panel-title">Recent assessments</h3>
+                </div>
+                <span className="pill subtle">Percentage</span>
+              </div>
               <Line
                 data={{
                   labels: trend.trend.map((p: any) => p.assessment),
@@ -142,8 +176,9 @@ export default function StudentDetail() {
                     {
                       label: "Percentage",
                       data: trend.trend.map((p: any) => p.percentage),
-                      borderColor: "#60a5fa",
-                      backgroundColor: "rgba(96, 165, 250, 0.2)",
+                      borderColor: "#2563eb",
+                      backgroundColor: "rgba(37, 99, 235, 0.16)",
+                      tension: 0.35,
                     },
                   ],
                 }}
@@ -154,16 +189,22 @@ export default function StudentDetail() {
       )}
 
       {profile && (
-        <div className="card">
-          <h3>Assessments</h3>
-          <table className="table">
+        <div className="card table-card">
+          <div className="panel-heading">
+            <div>
+              <p className="metric-label">Assessment breakdown</p>
+              <h3 className="panel-title">Term 1 performance</h3>
+            </div>
+            <p className="metric-sub">Sorted by assessment order.</p>
+          </div>
+          <table className="table modern-table">
             <thead>
               <tr>
                 <th>Assessment</th>
                 <th>Subject</th>
                 <th>Term</th>
                 <th>Score</th>
-                <th>%</th>
+                <th className="text-right">%</th>
               </tr>
             </thead>
             <tbody>
@@ -175,7 +216,7 @@ export default function StudentDetail() {
                   <td>
                     {m.score}/{m.maximum}
                   </td>
-                  <td>{m.percentage}%</td>
+                  <td className="text-right">{m.percentage}%</td>
                 </tr>
               ))}
             </tbody>
