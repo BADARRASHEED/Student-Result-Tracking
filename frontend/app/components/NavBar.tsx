@@ -30,22 +30,6 @@ export default function NavBar() {
       </Link>
 
       <div className="topbar-actions">
-        <nav className="main-nav" aria-label="Primary navigation">
-          <Link href="/dashboard" className="nav-pill">
-            Dashboard
-          </Link>
-          <Link href="/students" className="nav-pill">
-            Students
-          </Link>
-          <Link href="/marks" className="nav-pill">
-            Marks
-          </Link>
-        </nav>
-
-        <div className="status-chip subtle">
-          <span className="pulse-dot" aria-hidden /> Synced
-        </div>
-
         <div className="user-chip">
           <div className="user-avatar" aria-hidden>
             {(name || "Admin").charAt(0).toUpperCase()}
